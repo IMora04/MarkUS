@@ -31,6 +31,10 @@ const loadModel = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.INTEGER
     },
+    userId: {
+      allowNull: false,
+      type: DataTypes.INTEGER
+    },
     avgMark: DataTypes.INTEGER,
     officialMark: {
       allowNull: false,
