@@ -26,7 +26,7 @@ const loadModel = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.INTEGER
     },
-    mark: DataTypes.INTEGER,
+    mark: DataTypes.DOUBLE,
     weight: DataTypes.INTEGER,  
     createdAt: {
       allowNull: false,

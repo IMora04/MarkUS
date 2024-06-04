@@ -40,7 +40,7 @@ module.exports = {
         },
         onDelete: 'cascade'
       },
-      mark: Sequelize.INTEGER,
+      mark: Sequelize.DOUBLE,
       weight: Sequelize.INTEGER,  
         createdAt: {
         allowNull: false,

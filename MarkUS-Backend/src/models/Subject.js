@@ -35,11 +35,8 @@ const loadModel = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.INTEGER
     },
-    avgMark: DataTypes.INTEGER,
-    officialMark: {
-      allowNull: false,
-      type: DataTypes.INTEGER
-    },
+    avgMark: DataTypes.DOUBLE,
+    officialMark: DataTypes.DOUBLE,
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,

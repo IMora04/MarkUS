@@ -46,10 +46,10 @@ module.exports = {
         onDelete: 'cascade'
       },
       avgMark: {
-        type: Sequelize.INTEGER
+        type: Sequelize.DOUBLE
       },
       officialMark: {
-        type: Sequelize.INTEGER
+        type: Sequelize.DOUBLE
       },
       createdAt: {
         allowNull: false,
