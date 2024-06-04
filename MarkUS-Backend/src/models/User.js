@@ -11,6 +11,11 @@ const loadModel = (sequelize, DataTypes) => {
     static associate (models) {
       // define association here
       User.hasMany(models.Studies, { foreignKey: 'userId' })
+      User.hasMany(models.Subject, { foreignKey: 'userId' })
+      User.hasMany(models.Evaluable, { foreignKey: 'userId' })
+      User.hasMany(models.Course, { foreignKey: 'userId' })
+      User.hasMany(models.EvaluableType, { foreignKey: 'userId' })
+
     }
   }
   User.init({

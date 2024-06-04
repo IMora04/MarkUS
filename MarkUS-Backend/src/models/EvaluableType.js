@@ -9,10 +9,15 @@ const loadModel = (sequelize, DataTypes) => {
     static associate (models) {
       // define association here
       EvaluableType.hasMany(models.Evaluable, { foreignKey: 'evaluableTypeId' })
+      EvaluableType.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
     }
   }
   EvaluableType.init({
     name: DataTypes.STRING,
+    userId: {
+      allowNull: false,
+      type: DataTypes.INTEGER
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
