@@ -107,12 +107,12 @@ const AuthorizationContextProvider = props => {
 
   return (
     <AuthorizationContext.Provider value={{
-      loggedInUser,
-      signIn,
-      signOut,
-      signUp,
-      getToken,
-      updateProfile
+      loggedInUser: loggedInUser,
+      signIn: signIn,
+      signOut: signOut,
+      signUp: signUp,
+      getToken: getToken,
+      updateProfile: updateProfile
     }}
     >
       {props.children}

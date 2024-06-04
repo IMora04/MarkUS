@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "copy:env:win": "copy MarkUS-Backend\\.env.example MarkUS-Backend\\.env && copy MarkUS-Frontend\\.env.example MarkUS-Frontend\\.env",
+    "copy:env:bash": "cp MarkUS-Backend/.env.example MarkUS-Backend/.env && cp MarkUS-Frontend/.env.example MarkUS-Frontend/.env",
+    "install:backend": "npm install && cd MarkUS-Backend && npm install",
+    "install:frontend": "cd MarkUS-Frontend && npm install",
+    "migrate:backend": "cd MarkUS-Backend && npm run migrate",
+    "test:backend": "npm run migrate:backend && cd MarkUS-Backend && npm test",
+    "start:backend": "cd MarkUS-Backend && npm start",
+    "start:frontend:": "cd MarkUS-Frontend && npx cross-env NODE_OPTIONS=--openssl-legacy-provider expo start",
+    "install:all:win": "npm run copy:env:win && npm run install:backend && npm run migrate:backend && npm run install:frontend",
+    "install:all:bash": "npm run copy:env:bash && npm run install:backend && npm run migrate:backend && npm run install:frontend"
+  }
+}

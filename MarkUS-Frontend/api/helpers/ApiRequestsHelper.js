@@ -2,7 +2,7 @@ import axios from 'axios'
 import { handleError } from './Errors'
 import { prepareData } from './FileUploadHelper'
 
-axios.defaults.baseURL = process.env.API_BASE_URL
+axios.defaults.baseURL = process.env.EXPO_PUBLIC_API_BASE_URL
 
 const get = route => {
   return new Promise(function (resolve, reject) {
