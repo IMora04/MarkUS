@@ -17,7 +17,8 @@ module.exports = {
       },
       isAnual: {
         allowNull: false,
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       credits: {
         type: Sequelize.INTEGER
@@ -48,10 +49,9 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       officialMark: {
-        allowNull: false,
         type: Sequelize.INTEGER
       },
-        createdAt: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: new Date()
