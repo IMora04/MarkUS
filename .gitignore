@@ -121,3 +121,26 @@ web-build/
 .env
 # macOS
 .DS_Store
+MarkUS-FrontendOld/src/screens/Layoutold.js
+MarkUS-FrontendOld/src/styles/GlobalStyles.js
+MarkUS-FrontendOld/src/screens/MainScreen.js
+MarkUS-FrontendOld/src/screens/Layout.js
+MarkUS-FrontendOld/src/screens/Helper.js
+MarkUS-FrontendOld/src/context/AuthorizationContext.js
+MarkUS-FrontendOld/src/context/AppContext.js
+MarkUS-FrontendOld/src/api/helpers/FileUploadHelper.js
+MarkUS-FrontendOld/src/api/helpers/Errors.js
+MarkUS-FrontendOld/src/api/helpers/ApiRequestsHelper.js
+MarkUS-FrontendOld/src/api/AuthEndpoints.js
+MarkUS-FrontendOld/assets/splash.png
+MarkUS-FrontendOld/assets/icon.png
+MarkUS-FrontendOld/assets/favicon.png
+MarkUS-FrontendOld/assets/adaptive-icon.png
+MarkUS-FrontendOld/.vscode/settings.json
+MarkUS-FrontendOld/package.json
+MarkUS-FrontendOld/package-lock.json
+MarkUS-FrontendOld/babel.config.js
+MarkUS-FrontendOld/app.json
+MarkUS-FrontendOld/App.js
+MarkUS-FrontendOld/.gitignore
+MarkUS-FrontendOld/.eslintrc.js
