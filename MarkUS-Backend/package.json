@@ -13,12 +13,13 @@
     "multer": "^1.4.5-lts.1",
     "passport": "^0.6.0",
     "passport-http-bearer": "^1.0.1",
-    "sequelize": "^6.28.0",
+    "sequelize": "^6.37.3",
     "sequelize-cli": "^6.5.2"
   },
   "scripts": {
     "start": "node --inspect=0.0.0.0:9229 --watch ./src/backend.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
