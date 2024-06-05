@@ -7,12 +7,16 @@ export default function AuthLayout ({ children }) {
   const { loggedInUser } = useContext(AuthorizationContext)
 
   return (
-      <Stack>
-        {
-        loggedInUser
-          ? <Stack.Screen name="profile" />
-          : <Stack.Screen name="login" />
-        }
-      </Stack>
+    <Stack
+      screenOptions={{
+        headerShown: false
+      }}
+    >
+      {
+      loggedInUser
+        ? <Stack.Screen name="profile" />
+        : <Stack.Screen name="login" />
+      }
+    </Stack>
   )
 }
