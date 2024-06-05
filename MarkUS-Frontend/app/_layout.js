@@ -5,12 +5,10 @@ import Layout from '../components/Layout'
 
 export default function RootLayout () {
   return (
-    <>
     <AppContextProvider>
       <AuthorizationContextProvider>
         <Layout/>
       </AuthorizationContextProvider>
     </AppContextProvider>
-    </>
   )
 }
