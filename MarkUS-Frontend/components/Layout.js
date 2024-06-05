@@ -8,7 +8,7 @@ import * as GlobalStyles from '../styles/GlobalStyles'
 import { ApiError } from '../api/helpers/Errors'
 import { setStatusBarStyle } from 'expo-status-bar'
 
-export default function RootLayout () {
+export default function Layout () {
   const { getToken, signOut } = useContext(AuthorizationContext)
   const { error, setError } = useContext(AppContext)
 
