@@ -1,10 +1,11 @@
+import React, { useContext } from 'react'
 import { Text, View } from 'react-native'
-import React from 'react'
 import { Link } from 'expo-router'
-
-const testSubjects = ['ADDA', 'IISSI']
+import { AuthorizationContext } from '../context/AuthorizationContext'
 
 export default function Home () {
+  const { loggedInUser } = useContext(AuthorizationContext)
+
   return (
     <View
       style={{
@@ -13,8 +14,13 @@ export default function Home () {
         alignItems: 'center'
       }}
     >
-      <Text>Home.</Text>
-      <Link href="/marks">View test</Link>
+      {loggedInUser
+        ? <Text>Logged In!</Text>
+        : <>
+        <Text>Not logged in</Text>
+        <Link href={'/auth/login'}>Click to log in</Link>
+        </>
+      }
     </View>
   )
 }

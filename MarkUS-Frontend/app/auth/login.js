@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { StyleSheet, View, Pressable, Text, TextInput } from 'react-native'
-import { Formik } from 'formik'
+import { Formik, ErrorMessage } from 'formik'
 import * as yup from 'yup'
-import { AuthorizationContext } from '../context/AuthorizationContext'
+import { AuthorizationContext } from '../../context/AuthorizationContext'
 import { showMessage } from 'react-native-flash-message'
+import * as GlobalStyles from '../../styles/GlobalStyles'
+import { router } from 'expo-router'
 
 export default function LoginScreen ({ navigation }) {
   const { signIn } = useContext(AuthorizationContext)
@@ -24,15 +26,13 @@ export default function LoginScreen ({ navigation }) {
     setBackendErrors([])
     signIn(values,
       (loggedInUser) => {
-        loggedInUser.userType === 'customer'
-          ? showMessage({
-            message: `Welcome back ${loggedInUser.firstName}.`,
-            type: 'success'
-          })
-          : showMessage({
-            message: `Welcome back ${loggedInUser.firstName}. You are not a customer.`,
-            type: 'warning'
-          })
+        showMessage({
+          message: `Welcome back ${loggedInUser.firstName}.`,
+          type: 'success',
+          style: GlobalStyles.flashStyle,
+          titleStyle: GlobalStyles.flashTextStyle
+        })
+        router.replace('/auth/profile')
       },
       (error) => {
         setBackendErrors(error.errors)
@@ -54,6 +54,9 @@ export default function LoginScreen ({ navigation }) {
               placeholder='customer1@customer.com'
               textContentType='emailAddress'
             />
+
+            <ErrorMessage name={'email'} render={msg => <Text>{msg}</Text> }/>
+
             <TextInput
               name='password'
               label='password:'
@@ -61,6 +64,8 @@ export default function LoginScreen ({ navigation }) {
               textContentType='password'
               secureTextEntry={true}
             />
+
+            <ErrorMessage name={'password'} render={msg => <Text>{msg}</Text> }/>
 
             {backendErrors &&
               backendErrors.map((error, index) => <Text key={index}>{error.param}-{error.msg}</Text>)
