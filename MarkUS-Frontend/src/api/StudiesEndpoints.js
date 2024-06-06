@@ -4,8 +4,8 @@ function getAll () {
   return get('studies')
 }
 
-function getOne (id) {
+function getDetail (id) {
   return get(`studies/${id}`)
 }
 
-export { getAll, getOne }
+export { getAll, getDetail }

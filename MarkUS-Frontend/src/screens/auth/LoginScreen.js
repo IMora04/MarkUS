@@ -5,10 +5,7 @@ import * as yup from 'yup'
 import { AuthorizationContext } from '../../context/AuthorizationContext'
 import { showMessage } from 'react-native-flash-message'
 import * as GlobalStyles from '../../styles/GlobalStyles'
-import * as Google from 'expo-auth-session/providers/google'
-import * as WebBrowser from 'expo-web-browser'
-
-WebBrowser.maybeCompleteAuthSession()
+import InputItem from '../../components/InputItem'
 
 export default function LoginScreen ({ navigation }) {
   const { signIn, signInGoogle } = useContext(AuthorizationContext)
@@ -59,15 +56,6 @@ export default function LoginScreen ({ navigation }) {
       })
   }
 
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
-    {
-      androidClientId: process.env.EXPO_PUBLIC_OAUTH_ANDROIDID,
-      webClientId: process.env.EXPO_PUBLIC_OAUTH_WEBID
-    }
-  )
-
-  useEffect(() => { loginGoogle(response) }, [response])
-
   return (
     <Formik
       validationSchema={validationSchema}
@@ -76,24 +64,20 @@ export default function LoginScreen ({ navigation }) {
       {({ handleSubmit }) => (
         <View style={{ alignItems: 'center' }}>
           <View style={styles.container}>
-            <TextInput
+            <InputItem
               name='email'
               label='email:'
               placeholder='customer1@customer.com'
               textContentType='emailAddress'
             />
 
-            <ErrorMessage name={'email'} render={msg => <Text>{msg}</Text> }/>
-
-            <TextInput
+            <InputItem
               name='password'
               label='password:'
               placeholder='secret'
               textContentType='password'
               secureTextEntry={true}
             />
-
-            <ErrorMessage name={'password'} render={msg => <Text>{msg}</Text> }/>
 
             {backendErrors &&
               backendErrors.map((error, index) => <Text key={index}>{error.param}-{error.msg}</Text>)
@@ -115,10 +99,6 @@ export default function LoginScreen ({ navigation }) {
               <Text textStyle={styles.text}>
                 Create account
               </Text>
-            </Pressable>
-            <Pressable
-            onPress={() => promptAsync({ showInRecents: true })}>
-              <Text>GOOGLE</Text>
             </Pressable>
           </View>
         </View>

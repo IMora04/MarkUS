@@ -80,7 +80,6 @@ const AuthorizationContextProvider = props => {
     try {
       if (response?.type === 'success') {
         const userInfo = await fetchGoogleData(response.authentication.accessToken)
-        console.log(userInfo)
       }
       /*
       const loggedInUser = await login(data)
