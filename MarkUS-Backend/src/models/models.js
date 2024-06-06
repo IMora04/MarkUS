@@ -24,4 +24,4 @@ Object.keys(db).forEach(modelName => {
   }
 })
 
-export { User, sequelizeSession }
+export { User, Studies, Course, Subject, Evaluable, EvaluableType, sequelizeSession }

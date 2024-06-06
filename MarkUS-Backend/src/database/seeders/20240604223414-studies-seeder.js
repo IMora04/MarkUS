@@ -14,7 +14,10 @@ module.exports = {
     */
     await queryInterface.bulkInsert('Studies',
     [
-      { name: 'Ing. Software', credits: 240, hasTrimesters: false, userId: 1, years: 4 }
+      { name: 'Ing. Software', credits: 240, hasTrimesters: false, userId: 1, years: 4 },
+      { name: 'Ing. Salud', credits: 240, hasTrimesters: false, userId: 2, years: 4 },
+      { name: 'Master Cloud', credits: 120, hasTrimesters: false, userId: 1, years: 2 }
+
     ], {})
 
   },

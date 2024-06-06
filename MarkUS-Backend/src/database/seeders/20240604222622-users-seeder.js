@@ -17,7 +17,9 @@ module.exports = {
 
     await queryInterface.bulkInsert('Users',
       [
-        { firstName: 'Customer 1', lastName: 'Fake 1', email: 'customer1@customer.com', password: bcrypt.hashSync('secret', salt), avatar: process.env.AVATARS_FOLDER + '/maleAvatar.png' }
+        { firstName: 'SoftwareStudent', lastName: 'Fake 1', email: 'customer1@customer.com', password: bcrypt.hashSync('secret', salt), avatar: process.env.AVATARS_FOLDER + '/maleAvatar.png' },
+        { firstName: 'HealthStudent', lastName: 'Fake 1', email: 'owner1@owner.com', password: bcrypt.hashSync('secret', salt), avatar: process.env.AVATARS_FOLDER + '/femaleAvatar.png' }
+
       ], {})
   },
 
