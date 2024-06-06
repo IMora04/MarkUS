@@ -20,6 +20,26 @@ const get = route => {
   })
 }
 
+const getBearer = (route, bearer) => {
+  return new Promise(function (resolve, reject) {
+    axios.get(route, {
+      headers: {
+        Authorization: `Bearer ${bearer}`
+      }
+    })
+      .then(function (response) {
+        resolve(response.data)
+      })
+      .catch(error => {
+        try {
+          handleError(error)
+        } catch (error) {
+          reject(error)
+        }
+      })
+  })
+}
+
 const post = (route, data = null) => {
   const { config, preparedData } = prepareData(data)
 
@@ -72,4 +92,4 @@ const destroy = (route) => {
   })
 }
 
-export { get, post, put, destroy }
+export { get, post, put, destroy, getBearer }

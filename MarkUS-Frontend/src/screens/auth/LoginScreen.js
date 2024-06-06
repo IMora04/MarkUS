@@ -1,13 +1,17 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { StyleSheet, View, Pressable, Text, TextInput } from 'react-native'
 import { Formik, ErrorMessage } from 'formik'
 import * as yup from 'yup'
-import { AuthorizationContext } from '../context/AuthorizationContext'
+import { AuthorizationContext } from '../../context/AuthorizationContext'
 import { showMessage } from 'react-native-flash-message'
-import * as GlobalStyles from '../styles/GlobalStyles'
+import * as GlobalStyles from '../../styles/GlobalStyles'
+import * as Google from 'expo-auth-session/providers/google'
+import * as WebBrowser from 'expo-web-browser'
+
+WebBrowser.maybeCompleteAuthSession()
 
 export default function LoginScreen ({ navigation }) {
-  const { signIn } = useContext(AuthorizationContext)
+  const { signIn, signInGoogle } = useContext(AuthorizationContext)
   const [backendErrors, setBackendErrors] = useState()
   const validationSchema = yup.object().shape({
     email: yup
@@ -31,15 +35,40 @@ export default function LoginScreen ({ navigation }) {
           style: GlobalStyles.flashStyle,
           titleStyle: GlobalStyles.flashTextStyle
         })
-        navigation.navigate('Home')
+        navigation.navigate('MainStack')
       },
       (error) => {
         setBackendErrors(error.errors)
       })
   }
 
-  return (
+  const loginGoogle = (response) => {
+    setBackendErrors([])
+    signInGoogle(response,
+      (loggedInUser) => {
+        showMessage({
+          message: `Welcome back ${loggedInUser.firstName}.`,
+          type: 'success',
+          style: GlobalStyles.flashStyle,
+          titleStyle: GlobalStyles.flashTextStyle
+        })
+        navigation.navigate('MainStack')
+      },
+      (error) => {
+        setBackendErrors(error.errors)
+      })
+  }
 
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
+    {
+      androidClientId: process.env.EXPO_PUBLIC_OAUTH_ANDROIDID,
+      webClientId: process.env.EXPO_PUBLIC_OAUTH_WEBID
+    }
+  )
+
+  useEffect(() => { loginGoogle(response) }, [response])
+
+  return (
     <Formik
       validationSchema={validationSchema}
       initialValues={{ email: 'customer1@customer.com', password: 'secret' }}
@@ -86,6 +115,10 @@ export default function LoginScreen ({ navigation }) {
               <Text textStyle={styles.text}>
                 Create account
               </Text>
+            </Pressable>
+            <Pressable
+            onPress={() => promptAsync({ showInRecents: true })}>
+              <Text>GOOGLE</Text>
             </Pressable>
           </View>
         </View>

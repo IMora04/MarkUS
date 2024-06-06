@@ -2,7 +2,8 @@ import React, { useContext, useEffect } from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import LoginScreen from './LoginScreen'
 import RegisterScreen from './RegisterScreen'
-import { AuthorizationContext } from '../context/AuthorizationContext'
+import ProfileScreen from './ProfileScreen'
+import { AuthorizationContext } from '../../context/AuthorizationContext'
 
 export default function AuthStack ({ navigation }) {
   const Stack = createStackNavigator()
@@ -10,7 +11,7 @@ export default function AuthStack ({ navigation }) {
 
   useEffect(() => {
     if (loggedInUser) {
-      navigation.navigate('Home')
+      navigation.navigate('MainStack')
     }
   }, [loggedInUser])
 
@@ -18,8 +19,14 @@ export default function AuthStack ({ navigation }) {
       <Stack.Navigator initialRouteName='Login' screenOptions={{
         headerMode: 'float'
       }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
+        {
+          loggedInUser
+            ? <Stack.Screen name="Profile" component={ProfileScreen}/>
+            : <>
+            <Stack.Screen name="Login" component={LoginScreen}/>
+            <Stack.Screen name="Register" component={RegisterScreen}/>
+          </>
+        }
       </Stack.Navigator>
   )
 }

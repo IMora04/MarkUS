@@ -4,7 +4,7 @@ import axios from 'axios'
 import * as SecureStore from 'expo-secure-store'
 import React, { createContext, useState, useContext } from 'react'
 import { Platform } from 'react-native'
-import { isTokenValid, login, register, update } from '../api/AuthEndpoints'
+import { isTokenValid, login, register, update, fetchGoogleData } from '../api/AuthEndpoints'
 import { AppContext } from '../context/AppContext'
 
 const AuthorizationContext = createContext()
@@ -26,6 +26,7 @@ const AuthorizationContextProvider = props => {
       if (onError) { onError() }
     }
   }
+
   const signUp = async (data, onSuccess = null, onError = null) => {
     try {
       const registeredUser = await register(data)
@@ -74,6 +75,31 @@ const AuthorizationContextProvider = props => {
       processError(error, onError, 'login')
     }
   }
+
+  const signInGoogle = async (response, onSuccess = null, onError = null) => {
+    try {
+      if (response?.type === 'success') {
+        const userInfo = await fetchGoogleData(response.authentication.accessToken)
+        console.log(userInfo)
+      }
+      /*
+      const loggedInUser = await login(data)
+      axios.defaults.headers.common = { Authorization: `bearer ${loggedInUser.token}` }
+      setLoggedInUser(loggedInUser)
+      if (Platform.OS === 'ios' || Platform.OS === 'android') {
+        SecureStore.setItemAsync('user', JSON.stringify(loggedInUser))
+      } else {
+        AsyncStorage.setItem('user', JSON.stringify(loggedInUser))
+      }
+      if (onSuccess) {
+        onSuccess(loggedInUser)
+      }
+      */
+    } catch (error) {
+      processError(error, onError, 'login')
+    }
+  }
+
   const getToken = async (onSuccess = null, onError = null) => {
     setLoading(true)
     try {
@@ -107,12 +133,13 @@ const AuthorizationContextProvider = props => {
 
   return (
     <AuthorizationContext.Provider value={{
-      loggedInUser: loggedInUser,
-      signIn: signIn,
-      signOut: signOut,
-      signUp: signUp,
-      getToken: getToken,
-      updateProfile: updateProfile
+      loggedInUser,
+      signIn,
+      signOut,
+      signUp,
+      getToken,
+      updateProfile,
+      signInGoogle
     }}
     >
       {props.children}

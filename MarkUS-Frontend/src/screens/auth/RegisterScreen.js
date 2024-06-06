@@ -2,10 +2,9 @@ import React, { useContext, useState } from 'react'
 import { StyleSheet, View, Pressable, Text, TextInput } from 'react-native'
 import { Formik, ErrorMessage } from 'formik'
 import * as yup from 'yup'
-import { AuthorizationContext } from '../context/AuthorizationContext'
+import { AuthorizationContext } from '../../context/AuthorizationContext'
 import { showMessage } from 'react-native-flash-message'
-import * as GlobalStyles from '../styles/GlobalStyles'
-import { router } from 'expo-router'
+import * as GlobalStyles from '../../styles/GlobalStyles'
 
 export default function RegisterScreen ({ navigation }) {
   const { signIn } = useContext(AuthorizationContext)
@@ -32,7 +31,6 @@ export default function RegisterScreen ({ navigation }) {
           style: GlobalStyles.flashStyle,
           titleStyle: GlobalStyles.flashTextStyle
         })
-        router.replace('/auth/profile')
       },
       (error) => {
         setBackendErrors(error.errors)
@@ -81,7 +79,7 @@ export default function RegisterScreen ({ navigation }) {
 
             <Text textStyle={{ textAlign: 'center' }}>Not a member?</Text>
             <Pressable
-              onPress={() => navigation.navigate('RegisterScreen')
+              onPress={() => navigation.navigate('Register')
               }
               >
               <Text textStyle={styles.text}>

@@ -4,17 +4,17 @@ import { AuthorizationContext } from '../context/AuthorizationContext'
 import FlashMessage, { showMessage } from 'react-native-flash-message'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { ApiError } from '../api/helpers/Errors'
-import { createDrawerNavigator } from '@react-navigation/drawer'
 import { NavigationContainer } from '@react-navigation/native'
-import HomeScreen from './HomeScreen'
-import AuthStack from './AuthStack'
-import MainInfoScreen from './MainInfo'
+import MainStack from './MainStack'
+import AuthStack from './auth/AuthStack'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import CalendarStack from './CalendarStack'
 
 export default function Layout () {
   const { getToken, signOut } = useContext(AuthorizationContext)
   const { error, setError } = useContext(AppContext)
 
-  const Drawer = createDrawerNavigator()
+  const Tab = createBottomTabNavigator()
 
   const init = async () => {
     await getToken(
@@ -59,16 +59,11 @@ export default function Layout () {
   return (
     <>
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName={'Auth'}>
-        <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Auth" component={AuthStack} options=
-        {{
-          drawerItemStyle: { display: 'none' },
-          headerShown: false
-        }}
-        />
-        <Drawer.Screen name="MainInfo" component={MainInfoScreen} />
-      </Drawer.Navigator>
+      <Tab.Navigator initialRouteName={'AuthStack'} screenOptions={{ headerShown: false }}>
+        <Tab.Screen name="MainStack" component={MainStack}/>
+        <Tab.Screen name="CalendarStack" component={CalendarStack}/>
+        <Tab.Screen name="AuthStack" component={AuthStack}/>
+      </Tab.Navigator>
       <FlashMessage position="top" />
     </NavigationContainer>
     </>

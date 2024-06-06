@@ -6,14 +6,15 @@ import { showMessage } from 'react-native-flash-message'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { FlatList } from 'react-native-gesture-handler'
 
-export default function HomeScreen ({ navigation, route }) {
+export default function StudiesInfoScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
-  const [studies, setStudies] = useState([])
+  const [studies, setStudies] = useState({})
 
   useEffect(() => {
-    async function fetchStudies () {
+    async function fetchOneStudies () {
       try {
-        const fetchedStudies = await getAll()
+        const fetchedStudies = await getOne(route.params.id)
+        console.log(fetchedStudies)
         setStudies(fetchedStudies)
       } catch (error) {
         showMessage({
@@ -24,32 +25,24 @@ export default function HomeScreen ({ navigation, route }) {
         })
       }
     }
-    fetchStudies()
+    fetchOneStudies()
   }, [route])
-
-  const renderStudies = ({ item }) => {
-    return (
-      <View style={{ backgroundColor: 'white', marginVertical: 5, borderRadius: 15 }}>
-        <Pressable
-        style={{ margin: 10 }}
-        onPress={() => { navigation.navigate('MainInfo', { id: item.id }) }}>
-          <Text>{item.name}</Text>
-          <Text>{item.credits} credits</Text>
-          <Text>Currently {item.status}</Text>
-        </Pressable>
-      </View>
-    )
-  }
 
   return (
     <View style={{ margin: 20 }}>
-      <Text>SELECT YOUR STUDIES</Text>
-      <FlatList
-      style={{ marginVertical: 10 }}
-      data = {studies}
-      renderItem={renderStudies}
-      keyExtractor={item => item.id.toString()}
-      />
+      <Text>CHANGE STUDIES</Text>
+      <Text>
+        STUDIES NAME: {studies.name}
+      </Text>
+      <Text>
+        STUDIES AVERAGE MARK
+      </Text>
+      <Text>
+        N OF CREDITS TAKEN
+      </Text>
+      <Text>
+        TOP 5 SCORES
+      </Text>
     </View>
   )
 }
