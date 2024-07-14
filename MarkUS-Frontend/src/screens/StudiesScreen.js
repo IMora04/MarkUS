@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View, StyleSheet } from 'react-native'
 import { AuthorizationContext } from '../context/AuthorizationContext'
-import { getAll, getDetail } from '../api/StudiesEndpoints'
+import { getAll } from '../api/StudiesEndpoints'
 import { showMessage } from 'react-native-flash-message'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { FlatList } from 'react-native-gesture-handler'
@@ -40,7 +40,7 @@ export default function StudiesScreen ({ navigation, route }) {
 
   const renderStudies = ({ item }) => {
     return (
-      <View style={{ backgroundColor: 'white', marginVertical: 5, borderRadius: 15 }}>
+      <View style={styles.studiesCard}>
         <Pressable
         style={{ margin: 10 }}
         onPress={() => { navigation.navigate('Studies info', { id: item.id }) }}>
@@ -80,3 +80,7 @@ export default function StudiesScreen ({ navigation, route }) {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  studiesCard: { backgroundColor: 'white', marginVertical: 5, borderRadius: 15 }
+})

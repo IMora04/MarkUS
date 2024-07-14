@@ -26,7 +26,17 @@ const loadModel = (sequelize, DataTypes) => {
     studiesId: {
       allowNull: false,
       type: DataTypes.INTEGER
-    },    
+    },
+    status: {
+      allowNull: false,
+      type: DataTypes.ENUM,
+      values: [
+        'not taken',
+        'studying',
+        'taken',
+      ],
+      defaultValue: 'not taken'
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,

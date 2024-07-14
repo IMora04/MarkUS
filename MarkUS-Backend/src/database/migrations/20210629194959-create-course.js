@@ -14,6 +14,16 @@ module.exports = {
       credits: {
         type: Sequelize.INTEGER
       },
+      status: {
+        allowNull: false,
+        type: Sequelize.ENUM,
+        values: [
+          'not taken',
+          'studying',
+          'taken',
+        ],
+        defaultValue: 'not taken'
+      },
       userId: {
         allowNull: false,
         type: Sequelize.INTEGER,

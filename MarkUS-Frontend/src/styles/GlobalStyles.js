@@ -12,6 +12,7 @@ const brandBlue = '#648a9f'
 const brandBlueTap = '#648a9f'
 const brandGreen = '#059f94'
 const brandGreenTap = '#059f94'
+const appPurple = '#8641f4'
 const flashStyle = { paddingTop: 50, fontSize: 20 }
 const flashTextStyle = { fontSize: 18 }
 
@@ -27,4 +28,4 @@ const navigationTheme = {
   }
 }
 
-export { navigationTheme, brandPrimary, brandPrimaryTap, brandSecondary, brandSecondaryTap, brandSecondaryDisabled, brandSuccess, brandSuccessDisabled, brandSuccessTap, brandBackground, brandBlue, brandBlueTap, brandGreen, brandGreenTap, flashStyle, flashTextStyle, brandPrimaryDisabled }
+export { navigationTheme, appPurple, brandPrimary, brandPrimaryTap, brandSecondary, brandSecondaryTap, brandSecondaryDisabled, brandSuccess, brandSuccessDisabled, brandSuccessTap, brandBackground, brandBlue, brandBlueTap, brandGreen, brandGreenTap, flashStyle, flashTextStyle, brandPrimaryDisabled }

@@ -12,6 +12,9 @@ const loadFileRoutes = function (app) {
       isLoggedIn,
       StudiesController.index
     )
+    .post(
+      StudiesController.create
+    )
   app.route('/studies/:studiesId')
     .get(
       isLoggedIn,
