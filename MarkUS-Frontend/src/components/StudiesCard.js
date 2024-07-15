@@ -7,7 +7,10 @@ export default function StudiesCard (props) {
     <View style={styles.studiesCard}>
       {
         props.editing &&
-        <Pressable style={{ backgroundColor: 'red', borderRadius: 15, height: 30, width: 30, alignItems: 'center', justifyContent: 'center', marginLeft: 5, flexGrow: 0 }}>
+        <Pressable
+          style={{ backgroundColor: 'red', borderRadius: 15, height: 30, width: 30, alignItems: 'center', justifyContent: 'center', marginLeft: 5, flexGrow: 0 }}
+          onPress={props.onDelete}
+        >
           <MaterialCommunityIcons name='delete-outline' color={'white'} size={20}/>
         </Pressable>
       }

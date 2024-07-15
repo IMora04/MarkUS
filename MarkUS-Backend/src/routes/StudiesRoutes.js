@@ -23,6 +23,18 @@ const loadFileRoutes = function (app) {
       //StudiesMiddleware.checkStudiesOwnership,
       StudiesController.show
     )
+    .put(
+      isLoggedIn,
+      checkEntityExists(Studies, 'studiesId'),
+      //StudiesMiddleware.checkStudiesOwnership,
+      StudiesController.update
+    )
+    .delete(
+      isLoggedIn,
+      checkEntityExists(Studies, 'studiesId'),
+      //StudiesMiddleware.checkStudiesOwnership,
+      StudiesController.destroy
+    )
 }
 
 export default loadFileRoutes

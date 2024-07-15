@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Pressable, Text, View, StyleSheet, ScrollView, Switch, Image, Dimensions } from 'react-native'
 import { AuthorizationContext } from '../context/AuthorizationContext'
-import { getAll, create } from '../api/StudiesEndpoints'
+import { getAll, create, update, remove } from '../api/StudiesEndpoints'
 import { showMessage } from 'react-native-flash-message'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { FlatList } from 'react-native-gesture-handler'
@@ -13,16 +13,20 @@ import * as yup from 'yup'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as ExpoImagePicker from 'expo-image-picker'
 import StudiesCard from '../components/StudiesCard'
+import DeleteModal from '../components/DeleteModal'
 
 export default function StudiesScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
   const [studies, setStudies] = useState([])
   const isFocused = useIsFocused()
   const [showModal, setShowModal] = useState(false)
-  const [edition, setEdition] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [editing, setEditing] = useState(false)
   const [backendErrors, setBackendErrors] = useState()
+  const [editingId, setEditingId] = useState(null)
+  const [editedOrDeleted, setEditedOrDeleted] = useState(false)
 
-  const initialValues = { name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null }
+  const [initialValues, setInitialValues] = useState({ name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null })
   const validationSchema = yup.object().shape({
     name: yup
       .string()
@@ -79,6 +83,7 @@ export default function StudiesScreen ({ navigation, route }) {
       try {
         const fetchedStudies = await getAll()
         setStudies(fetchedStudies)
+        if (editedOrDeleted) { setEditedOrDeleted(false) }
       } catch (error) {
         showMessage({
           message: `There was an error while retrieving studies. ${error} `,
@@ -89,7 +94,7 @@ export default function StudiesScreen ({ navigation, route }) {
       }
     }
     fetchStudies()
-  }, [isFocused, loggedInUser])
+  }, [isFocused, loggedInUser, editedOrDeleted])
 
   const pickImage = async (onSuccess) => {
     const result = await ExpoImagePicker.launchImageLibraryAsync({
@@ -123,28 +128,77 @@ export default function StudiesScreen ({ navigation, route }) {
     }
   }
 
+  const updateStudies = async (values) => {
+    setBackendErrors([])
+    try {
+      const updatedStudies = await update(editingId, values)
+      showMessage({
+        message: `Studies ${updatedStudies.name} succesfully updated`,
+        type: 'success',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+      setShowModal(false)
+      setEditing(false)
+      setEditedOrDeleted(true)
+    } catch (error) {
+      console.log(error)
+      setBackendErrors(error.errors)
+    }
+  }
+
+  const removeStudies = async (id) => {
+    try {
+      await remove(id)
+      setShowDeleteModal(false)
+      setEditedOrDeleted(true)
+      setEditing(false)
+      showMessage({
+        message: 'Studies succesfully removed',
+        type: 'success',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+    } catch (error) {
+      console.log(error)
+      showMessage({
+        message: 'Studies could not be removed.',
+        type: 'error',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+    }
+  }
+
   const renderHomeButtons = () => {
     return (
       <View style={{ flexDirection: 'row', justifyContent: dimensions.window.width > 450 ? 'flex-end' : 'space-around' }}>
-      <Pressable
-        style={[styles.homeButton, { backgroundColor: 'green' }]}
-        onPress={() => { setShowModal(true) }}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialCommunityIcons name='plus' color={'white'} size={20}/>
-          <Text style={{ margin: 5, color: 'white' }}>Add studies</Text>
-        </View>
-      </Pressable>
-      <Pressable
-        style={[styles.homeButton, { backgroundColor: edition ? 'red' : 'blue' }]}
-        onPress={() => { setEdition(!edition) }}
-        >
-        <View style={{ flexDirection: 'row', alignItems: 'center', width: 118, justifyContent: 'center' }}>
-          <MaterialCommunityIcons name={edition ? 'cancel' : 'pencil'} color={'white'} size={20}/>
-          <Text style={{ margin: 5, color: 'white' }}>{edition ? 'Cancel edition' : 'Edit studies'}</Text>
-        </View>
-      </Pressable>
-    </View>
+        {
+          !editing &&
+          <Pressable
+            style={[styles.homeButton, { backgroundColor: 'green' }]}
+            onPress={() => { setShowModal(true) }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <MaterialCommunityIcons name='plus' color={'white'} size={20}/>
+              <Text style={{ margin: 5, color: 'white' }}>Add studies</Text>
+            </View>
+          </Pressable>
+        }
+        <Pressable
+          style={[styles.homeButton, { backgroundColor: editing ? 'red' : 'blue' }]}
+          onPress={() => {
+            setInitialValues({ name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null })
+            setEditing(!editing)
+            setEditingId(null)
+          }}
+          >
+          <View style={{ flexDirection: 'row', alignItems: 'center', width: 118, justifyContent: 'center' }}>
+            <MaterialCommunityIcons name={editing ? 'cancel' : 'pencil'} color={'white'} size={20}/>
+            <Text style={{ margin: 5, color: 'white' }}>{editing ? 'Cancel edition' : 'Edit studies'}</Text>
+          </View>
+        </Pressable>
+      </View>
     )
   }
 
@@ -167,10 +221,26 @@ export default function StudiesScreen ({ navigation, route }) {
             }
 
             <FlatList
-            style={{ marginVertical: 10 }}
-            data = {studies}
-            renderItem={({ item }) => <StudiesCard onPress={() => { navigation.navigate(edition ? 'Edit studies' : 'Studies info', { id: item.id }) }} item={item} editing={edition}/>}
-            keyExtractor={item => item.id.toString()}
+              style={{ marginVertical: 10 }}
+              data = {studies}
+              renderItem={({ item }) => <StudiesCard
+              onPress={
+                editing
+                  ? () => {
+                      setInitialValues({ name: item.name, credits: item.credits, description: item.description, logo: item.logo, hasTrimesters: item.hasTrimesters, years: item.years })
+                      setShowModal(true)
+                      setEditingId(item.id)
+                    }
+                  : () => { navigation.navigate('Studies info', { id: item.id }) }
+              }
+              onDelete={() => {
+                setShowDeleteModal(true)
+                setEditingId(item.id)
+              }}
+              item={item}
+              editing={editing}/>
+              }
+              keyExtractor={item => item.id.toString()}
             />
 
             {
@@ -272,7 +342,7 @@ export default function StudiesScreen ({ navigation, route }) {
                     </Pressable>
 
                     <Pressable
-                      onPress={async () => { await createStudies(values) }}
+                      onPress={editing ? async () => { await updateStudies(values) } : async () => { await createStudies(values) } }
                       style={({ pressed }) => [
                         {
                           backgroundColor: pressed
@@ -282,9 +352,9 @@ export default function StudiesScreen ({ navigation, route }) {
                         styles.actionButton]}
                       >
                       <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-                        <MaterialCommunityIcons name='check' color={'white'} size={20}/>
+                        <MaterialCommunityIcons name={editing ? 'content-save' : 'check'} color={'white'} size={20}/>
                         <Text style={styles.text}>
-                          Create
+                          {editing ? 'Confirm edition' : 'Create'}
                         </Text>
                       </View>
                     </Pressable>
@@ -295,6 +365,11 @@ export default function StudiesScreen ({ navigation, route }) {
               </View>
 
             </CreateStudiesModal>
+            <DeleteModal
+              isVisible={showDeleteModal}
+              onCancel={() => setShowDeleteModal(false)}
+              onConfirm={() => removeStudies(editingId)}
+            />
           </>
           : <View style={{ justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%' }}>
             <Text style={{ fontSize: 15 }}>You are not logged in!</Text>
