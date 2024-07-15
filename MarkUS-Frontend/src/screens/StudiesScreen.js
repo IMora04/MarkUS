@@ -12,12 +12,14 @@ import InputItem from '../components/InputItem'
 import * as yup from 'yup'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as ExpoImagePicker from 'expo-image-picker'
+import StudiesCard from '../components/StudiesCard'
 
 export default function StudiesScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
   const [studies, setStudies] = useState([])
   const isFocused = useIsFocused()
   const [showModal, setShowModal] = useState(false)
+  const [edition, setEdition] = useState(false)
   const [backendErrors, setBackendErrors] = useState()
 
   const initialValues = { name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null }
@@ -89,20 +91,6 @@ export default function StudiesScreen ({ navigation, route }) {
     fetchStudies()
   }, [isFocused, loggedInUser])
 
-  const renderStudies = ({ item }) => {
-    return (
-      <View style={styles.studiesCard}>
-        <Pressable
-        style={{ margin: 10 }}
-        onPress={() => { navigation.navigate('Studies info', { id: item.id }) }}>
-          <Text>{item.name}</Text>
-          <Text>{item.credits} credits</Text>
-          <Text>Currently {item.status}</Text>
-        </Pressable>
-      </View>
-    )
-  }
-
   const pickImage = async (onSuccess) => {
     const result = await ExpoImagePicker.launchImageLibraryAsync({
       mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
@@ -135,24 +123,64 @@ export default function StudiesScreen ({ navigation, route }) {
     }
   }
 
+  const renderHomeButtons = () => {
+    return (
+      <View style={{ flexDirection: 'row', justifyContent: dimensions.window.width > 450 ? 'flex-end' : 'space-around' }}>
+      <Pressable
+        style={[styles.homeButton, { backgroundColor: 'green' }]}
+        onPress={() => { setShowModal(true) }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialCommunityIcons name='plus' color={'white'} size={20}/>
+          <Text style={{ margin: 5, color: 'white' }}>Add studies</Text>
+        </View>
+      </Pressable>
+      <Pressable
+        style={[styles.homeButton, { backgroundColor: edition ? 'red' : 'blue' }]}
+        onPress={() => { setEdition(!edition) }}
+        >
+        <View style={{ flexDirection: 'row', alignItems: 'center', width: 118, justifyContent: 'center' }}>
+          <MaterialCommunityIcons name={edition ? 'cancel' : 'pencil'} color={'white'} size={20}/>
+          <Text style={{ margin: 5, color: 'white' }}>{edition ? 'Cancel edition' : 'Edit studies'}</Text>
+        </View>
+      </Pressable>
+    </View>
+    )
+  }
+
   return (
     <View style={{ margin: 20 }}>
       {
         loggedInUser
           ? <>
-            <Text>SELECT YOUR STUDIES</Text>
+            <Text style={{ height: 20 }}>
+              Your studies:
+            </Text>
+
+            {
+              dimensions.window.width > 450 &&
+              <View style={{ marginTop: -30, height: 40 }}>
+                {
+                  renderHomeButtons()
+                }
+              </View>
+            }
+
             <FlatList
             style={{ marginVertical: 10 }}
             data = {studies}
-            renderItem={renderStudies}
+            renderItem={({ item }) => <StudiesCard onPress={() => { navigation.navigate(edition ? 'Edit studies' : 'Studies info', { id: item.id }) }} item={item} editing={edition}/>}
             keyExtractor={item => item.id.toString()}
             />
-            <Pressable
-            onPress={() => { setShowModal(true) }}>
-              <Text>Add studies</Text>
-            </Pressable>
+
+            {
+              dimensions.window.width <= 450 &&
+              renderHomeButtons()
+            }
+
             <CreateStudiesModal
               isVisible={showModal}
+              onCancel={() => setShowModal(false)}
             >
               <View style={{ maxHeight: dimensions.window.width < 450 ? 500 : 680, width: '90%' }}>
                 <Text style={{ fontSize: 15, textAlign: 'center', marginBottom: 5 }}>Please add new studies info</Text>
@@ -215,7 +243,7 @@ export default function StudiesScreen ({ navigation, route }) {
                           style={{ alignSelf: 'center', margin: 5, borderWidth: 1, borderRadius: 5, padding: 5, backgroundColor: GlobalStyles.brandBackground }}
                           onPress={() => { setFieldValue('logo', null) }}
                         >
-                          <Text>Delete logo</Text>
+                          <MaterialCommunityIcons name='delete' color={'black'} size={20}/>
                         </Pressable>
 
                         {backendErrors &&
@@ -268,14 +296,21 @@ export default function StudiesScreen ({ navigation, route }) {
 
             </CreateStudiesModal>
           </>
-          : <Text>You are not logged in</Text>
+          : <View style={{ justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%' }}>
+            <Text style={{ fontSize: 15 }}>You are not logged in!</Text>
+            <Pressable
+              style={{ padding: 10, backgroundColor: 'white', borderRadius: 10, margin: 10 }}
+              onPress={() => { navigation.navigate('AuthStack') }}
+            >
+              <Text style={{ fontSize: 20 }}>Log In</Text>
+            </Pressable>
+          </View>
       }
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  studiesCard: { backgroundColor: 'white', marginVertical: 5, borderRadius: 15 },
   image: {
     width: 100,
     height: 100,
@@ -297,5 +332,10 @@ const styles = StyleSheet.create({
     color: 'white',
     alignSelf: 'center',
     marginLeft: 5
+  },
+  homeButton: {
+    padding: 5,
+    borderRadius: 10,
+    marginHorizontal: 5
   }
 })
