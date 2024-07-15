@@ -1,6 +1,7 @@
 import React from 'react'
-import { Modal, StyleSheet, View } from 'react-native'
+import { Modal, Pressable, StyleSheet, View } from 'react-native'
 import { BlurView } from 'expo-blur'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 export default function CreateStudiesModal (props) {
   return (
@@ -22,6 +23,13 @@ export default function CreateStudiesModal (props) {
       onRequestClose={props.onCancel}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+
+              <Pressable
+              style={{ marginTop: -21, alignSelf: 'flex-end', marginRight: -22 }}
+              onPress={props.onCancel}
+              >
+                <MaterialCommunityIcons name='close' color={'black'} size={20}/>
+              </Pressable>
 
             {props.children}
 
