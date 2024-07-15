@@ -10,6 +10,7 @@ import CreateStudiesModal from '../components/CreateModal'
 import { ErrorMessage, Formik } from 'formik'
 import InputItem from '../components/InputItem'
 import * as yup from 'yup'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as ExpoImagePicker from 'expo-image-picker'
 
 export default function StudiesScreen ({ navigation, route }) {
@@ -17,6 +18,7 @@ export default function StudiesScreen ({ navigation, route }) {
   const [studies, setStudies] = useState([])
   const isFocused = useIsFocused()
   const [showModal, setShowModal] = useState(false)
+  const [backendErrors, setBackendErrors] = useState()
 
   const initialValues = { name: null, credits: null, description: null, logo: null, hasTrimesters: null, status: null, years: null }
   const validationSchema = yup.object().shape({
@@ -119,6 +121,23 @@ export default function StudiesScreen ({ navigation, route }) {
     }
   }
 
+  const createStudies = async (values) => {
+    setBackendErrors([])
+    try {
+      const createdStudies = await create(values)
+      showMessage({
+        message: `Studies ${createdStudies.name} succesfully created`,
+        type: 'success',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+      navigation.navigate('Studies info', { id: createdStudies.id })
+    } catch (error) {
+      console.log(error)
+      setBackendErrors(error.errors)
+    }
+  }
+
   return (
     <View style={{ margin: 20 }}>
       {
@@ -137,10 +156,8 @@ export default function StudiesScreen ({ navigation, route }) {
             </Pressable>
             <CreateStudiesModal
               isVisible={showModal}
-              onCancel={() => setShowModal(false)}
-              onConfirm={() => {}}
             >
-              <ScrollView style={{ maxHeight: dimensions.window.width < 450 ? 400 : 650, width: '100%' }}>
+              <View style={{ maxHeight: dimensions.window.width < 450 ? 400 : 680, width: '100%' }}>
                 <Text style={{ fontSize: 15, textAlign: 'center' }}>Please add new studies info</Text>
 
                 <Formik
@@ -148,6 +165,7 @@ export default function StudiesScreen ({ navigation, route }) {
                   initialValues={initialValues}
                   onSubmit={() => {}}>
                   {({ handleSubmit, setFieldValue, values }) => (
+                    <>
                     <ScrollView>
                       <View>
                         <InputItem
@@ -203,11 +221,53 @@ export default function StudiesScreen ({ navigation, route }) {
                           <Text>Delete logo</Text>
                         </Pressable>
 
+                        {backendErrors &&
+                          backendErrors.map((error, index) => <Text key={index} style={{ color: 'red' }}>{error.param}-{error.msg}</Text>)
+                        }
+
                       </View>
                     </ScrollView>
+
+                    <Pressable
+                      onPress={() => setShowModal(false)}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed
+                            ? GlobalStyles.brandPrimary
+                            : GlobalStyles.brandPrimaryTap
+                        },
+                        styles.actionButton]}
+                    >
+                      <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+                        <MaterialCommunityIcons name='close' color={'white'} size={20}/>
+                        <Text style={styles.text}>
+                          Cancel
+                        </Text>
+                      </View>
+                    </Pressable>
+
+                    <Pressable
+                      onPress={handleSubmit}
+                      style={({ pressed }) => [
+                        {
+                          backgroundColor: pressed
+                            ? GlobalStyles.brandSuccessTap
+                            : GlobalStyles.brandSuccess
+                        },
+                        styles.actionButton]}
+                      >
+                      <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+                        <MaterialCommunityIcons name='check' color={'white'} size={20}/>
+                        <Text style={styles.text}>
+                          Create
+                        </Text>
+                      </View>
+                    </Pressable>
+
+                    </>
                   )}
                 </Formik>
-              </ScrollView>
+              </View>
 
             </CreateStudiesModal>
           </>
@@ -225,5 +285,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignSelf: 'center',
     marginTop: 5
+  },
+  actionButton: {
+    borderRadius: 8,
+    height: 40,
+    margin: 8,
+    padding: 10,
+    alignSelf: 'center',
+    flexDirection: 'column',
+    width: '50%'
+  },
+  text: {
+    fontSize: 16,
+    color: 'white',
+    alignSelf: 'center',
+    marginLeft: 5
   }
 })

@@ -1,8 +1,6 @@
 import React from 'react'
-import { Modal, StyleSheet, View, Pressable, Text } from 'react-native'
+import { Modal, StyleSheet, View } from 'react-native'
 import { BlurView } from 'expo-blur'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import * as GlobalStyles from '../styles/GlobalStyles'
 
 export default function CreateStudiesModal (props) {
   return (
@@ -26,42 +24,6 @@ export default function CreateStudiesModal (props) {
           <View style={styles.modalView}>
 
             {props.children}
-
-            <Pressable
-              onPress={props.onCancel}
-              style={({ pressed }) => [
-                {
-                  backgroundColor: pressed
-                    ? GlobalStyles.brandPrimary
-                    : GlobalStyles.brandPrimaryTap
-                },
-                styles.actionButton]}
-            >
-              <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-                <MaterialCommunityIcons name='close' color={'white'} size={20}/>
-                <Text style={styles.text}>
-                  Cancel
-                </Text>
-              </View>
-            </Pressable>
-
-            <Pressable
-              onPress={props.onConfirm}
-              style={({ pressed }) => [
-                {
-                  backgroundColor: pressed
-                    ? GlobalStyles.brandSuccessTap
-                    : GlobalStyles.brandSuccess
-                },
-                styles.actionButton]}
-              >
-              <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-                <MaterialCommunityIcons name='check' color={'white'} size={20}/>
-                <Text style={styles.text}>
-                  Create
-                </Text>
-              </View>
-            </Pressable>
 
           </View>
         </View>
