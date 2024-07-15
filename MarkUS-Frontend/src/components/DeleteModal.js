@@ -24,8 +24,10 @@ export default function DeleteModal (props) {
       onRequestClose={props.onCancel}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.text}>Are you sure you want to delete {'name'}?</Text>
-            <Text style={styles.text}>All courses, subjects and marks will be deleted as well.</Text>
+            <View style={{ marginVertical: 10 }}>
+              <Text style={styles.text}>Are you sure you want to delete these studies?</Text>
+              <Text style={styles.text}>All courses, subjects and marks will be deleted as well.</Text>
+            </View>
 
             <Pressable
               onPress={props.onCancel}
@@ -90,7 +92,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.75,
     shadowRadius: 4,
     elevation: 5,
-    width: '50%'
+    width: '80%'
   },
   actionButton: {
     borderRadius: 8,
@@ -104,7 +106,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: 'black',
-    alignSelf: 'center',
+    alignSelf: 'start',
     marginLeft: 5
   },
   absolute: {
