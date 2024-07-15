@@ -8,6 +8,7 @@ import { useIsFocused } from '@react-navigation/native'
 import { FlatList } from 'react-native-gesture-handler'
 import { ProgressCircle } from 'react-native-svg-charts'
 import DropDownPicker from 'react-native-dropdown-picker'
+import CourseAdder from '../components/CourseAdder'
 
 export default function StudiesInfoScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
@@ -123,9 +124,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
       <View style={[styles.coursesCard, { alignItems: 'center' }]}>
         <View style={{ margin: 10 }}>
           <Text style={{ textAlign: 'center' }}>No courses found ({currentStudies.years} expected). Do you want to add a new course to {currentStudies.name}?</Text>
-          <Pressable style={{ marginTop: 5 }}>
-            <Text style={{ fontWeight: 'bold', textAlign: 'center' }}>Add new course</Text>
-          </Pressable>
+          <CourseAdder/>
         </View>
       </View>
     )
@@ -133,7 +132,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
 
   const renderStudiesSelector = () => {
     return (
-      <View>
+      <>
         <DropDownPicker
           open={open}
           value={currentStudies.id}
@@ -147,7 +146,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
           style={{ backgroundColor: GlobalStyles.brandBackground }}
           dropDownStyle={{ backgroundColor: '#fafafa' }}
         />
-      </View>
+      </>
     )
   }
 
@@ -173,15 +172,28 @@ export default function StudiesInfoScreen ({ navigation, route }) {
 
   const renderCourses = () => {
     return (
-      <FlatList
-      data={currentStudies.courses}
-      renderItem={renderCourse}
-      style={{ flexGrow: 0, marginTop: 20 }}
-      scrollEnabled={false}
-      keyExtractor={item => item.id.toString()}
-      ListEmptyComponent={renderEmptyCourses}
-      ListHeaderComponent={renderCoursesHeader}
-      />
+      <>
+        <FlatList
+        data={currentStudies.courses}
+        renderItem={renderCourse}
+        style={{ flexGrow: 0, marginTop: 20 }}
+        scrollEnabled={false}
+        keyExtractor={item => item.id.toString()}
+        ListEmptyComponent={renderEmptyCourses}
+        ListHeaderComponent={renderCoursesHeader}
+        />
+        {
+          currentStudies && currentStudies.courses && currentStudies.courses.length !== 0
+            ? <View style={{ marginTop: 10, alignSelf: 'center', flexDirection: 'row', alignItems: 'center' }}>
+            <Text>{currentStudies.courses.length}/{currentStudies.years} courses added.</Text>
+            {
+              (currentStudies.courses.length !== currentStudies.years) &&
+              <CourseAdder/>
+            }
+          </View>
+            : <></>
+        }
+      </>
     )
   }
 
@@ -208,7 +220,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
               </Text>
             </View>
           </View>
-          <View style={{ marginLeft: dimensions.window.width > 450 ? 50 : 0, marginTop: dimensions.window.width > 450 ? 0 : 10 }}>
+          <View style={{ marginLeft: dimensions.window.width > 450 ? 50 : 0, marginTop: dimensions.window.width > 450 ? 0 : 10, alignSelf: dimensions.window.width < 450 ? 'flex-start' : 'center' }}>
             <Text>
               TOP 5 SCORES:
               {
