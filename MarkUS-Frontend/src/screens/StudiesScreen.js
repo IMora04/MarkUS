@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Pressable, Text, View, StyleSheet, ScrollView, Switch, Image, Dimensions } from 'react-native'
 import { AuthorizationContext } from '../context/AuthorizationContext'
-import { getAll } from '../api/StudiesEndpoints'
+import { getAll, create } from '../api/StudiesEndpoints'
 import { showMessage } from 'react-native-flash-message'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { FlatList } from 'react-native-gesture-handler'
@@ -20,7 +20,7 @@ export default function StudiesScreen ({ navigation, route }) {
   const [showModal, setShowModal] = useState(false)
   const [backendErrors, setBackendErrors] = useState()
 
-  const initialValues = { name: null, credits: null, description: null, logo: null, hasTrimesters: null, status: null, years: null }
+  const initialValues = { name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null }
   const validationSchema = yup.object().shape({
     name: yup
       .string()
@@ -40,10 +40,6 @@ export default function StudiesScreen ({ navigation, route }) {
       .nullable(),
     hasTrimesters: yup
       .boolean(),
-    status: yup
-      .string()
-      .oneOf(['studying', 'finished'])
-      .required('The status is required'),
     years: yup
       .number()
       .positive('The number of years must be positive')
@@ -131,6 +127,7 @@ export default function StudiesScreen ({ navigation, route }) {
         style: GlobalStyles.flashStyle,
         titleStyle: GlobalStyles.flashTextStyle
       })
+      setShowModal(false)
       navigation.navigate('Studies info', { id: createdStudies.id })
     } catch (error) {
       console.log(error)
@@ -157,13 +154,13 @@ export default function StudiesScreen ({ navigation, route }) {
             <CreateStudiesModal
               isVisible={showModal}
             >
-              <View style={{ maxHeight: dimensions.window.width < 450 ? 400 : 680, width: '100%' }}>
-                <Text style={{ fontSize: 15, textAlign: 'center' }}>Please add new studies info</Text>
+              <View style={{ maxHeight: dimensions.window.width < 450 ? 500 : 680, width: '90%' }}>
+                <Text style={{ fontSize: 15, textAlign: 'center', marginBottom: 5 }}>Please add new studies info</Text>
 
                 <Formik
                   validationSchema={validationSchema}
                   initialValues={initialValues}
-                  onSubmit={() => {}}>
+                  onSubmit={createStudies}>
                   {({ handleSubmit, setFieldValue, values }) => (
                     <>
                     <ScrollView>
@@ -186,7 +183,7 @@ export default function StudiesScreen ({ navigation, route }) {
                         />
 
                         <Text style={{ marginLeft: 13, marginTop: 10 }}>It uses:</Text>
-                        <View style={{ flexDirection: 'row', marginVertical: 5, marginBottom: 5, alignItems: 'center', alignSelf: 'center' }}>
+                        <View style={{ flexDirection: 'row', marginVertical: 5, marginBottom: 5, alignItems: 'center', alignSelf: dimensions.window.width < 450 ? 'center' : 'flex-start' }}>
                           <Text>Quadrimesters</Text>
                           <Switch
                             trackColor={{ false: GlobalStyles.brandSecondary, true: GlobalStyles.brandPrimary }}
@@ -247,7 +244,7 @@ export default function StudiesScreen ({ navigation, route }) {
                     </Pressable>
 
                     <Pressable
-                      onPress={handleSubmit}
+                      onPress={async () => { await createStudies(values) }}
                       style={({ pressed }) => [
                         {
                           backgroundColor: pressed

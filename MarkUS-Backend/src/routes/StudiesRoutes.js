@@ -13,6 +13,7 @@ const loadFileRoutes = function (app) {
       StudiesController.index
     )
     .post(
+      isLoggedIn,
       StudiesController.create
     )
   app.route('/studies/:studiesId')
