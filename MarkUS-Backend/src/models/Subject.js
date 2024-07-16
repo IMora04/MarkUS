@@ -26,6 +26,11 @@ const loadModel = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.BOOLEAN
     },
+    secondSemester: {
+      allowNull: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     credits: DataTypes.INTEGER,
     courseId: {
       allowNull: false,
