@@ -42,7 +42,6 @@ export default function StudiesInfoScreen ({ navigation, route }) {
   async function fetchOneStudies (id) {
     try {
       const fetchedStudies = await getDetail(id)
-      console.log(fetchedStudies)
       setCurrentStudies(fetchedStudies)
     } catch (error) {
       showMessage({
@@ -112,7 +111,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
       <View style={styles.coursesCard}>
         <Pressable
         style={{ margin: 10 }}
-        onPress={() => { navigation.navigate('Course info', { course: item }) }}>
+        onPress={() => { navigation.navigate('Course info', { id: item.id, currentStudies }) }}>
           <Text>{courseMapper[item.id]} course</Text>
         </Pressable>
       </View>
