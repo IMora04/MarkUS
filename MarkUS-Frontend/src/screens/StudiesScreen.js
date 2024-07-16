@@ -141,6 +141,7 @@ export default function StudiesScreen ({ navigation, route }) {
       setShowModal(false)
       setEditing(false)
       setEditedOrDeleted(true)
+      setInitialValues({ name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null })
     } catch (error) {
       console.log(error)
       setBackendErrors(error.errors)
@@ -282,7 +283,7 @@ export default function StudiesScreen ({ navigation, route }) {
 
                         <Text style={{ marginLeft: 13, marginTop: 10 }}>It uses:</Text>
                         <View style={{ flexDirection: 'row', marginVertical: 5, marginBottom: 5, alignItems: 'center', alignSelf: dimensions.window.width < 450 ? 'center' : 'flex-start' }}>
-                          <Text>Quadrimesters</Text>
+                          <Text>Semesters</Text>
                           <Switch
                             trackColor={{ false: GlobalStyles.brandSecondary, true: GlobalStyles.brandPrimary }}
                             thumbColor={values.hasTrimesters ? GlobalStyles.brandSecondary : '#f4f3f4'}
