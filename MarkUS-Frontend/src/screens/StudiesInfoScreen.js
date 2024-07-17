@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Pressable, Text, View, StyleSheet, Dimensions } from 'react-native'
+import { Pressable, Text, View, StyleSheet, Dimensions, ActivityIndicator } from 'react-native'
 import { AuthorizationContext } from '../context/AuthorizationContext'
 import { getAll, getDetail } from '../api/StudiesEndpoints'
 import { showMessage } from 'react-native-flash-message'
@@ -16,6 +16,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
   const [currentStudies, setCurrentStudies] = useState({})
   const [studies, setStudies] = useState([])
   const [stats, setStats] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const isFocused = useIsFocused()
 
@@ -54,7 +55,9 @@ export default function StudiesInfoScreen ({ navigation, route }) {
   }
 
   useEffect(() => {
+    setLoading(true)
     fetchOneStudies(route.params.id)
+    setLoading(false)
   }, [route])
 
   useEffect(() => {
@@ -84,7 +87,9 @@ export default function StudiesInfoScreen ({ navigation, route }) {
         })
       }
     }
+    setLoading(true)
     fetchStudies()
+    setLoading(false)
   }, [isFocused, loggedInUser])
 
   useEffect(() => {
@@ -197,7 +202,11 @@ export default function StudiesInfoScreen ({ navigation, route }) {
   }
 
   return (
-    <View style={{ padding: 20 }}>
+    loading
+      ? <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+      <ActivityIndicator/>
+    </View>
+      : <View style={{ padding: 20 }}>
 
         {
           renderStudiesSelector()

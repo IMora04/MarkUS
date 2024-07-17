@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Text, StyleSheet, Dimensions, View, Pressable, Switch } from 'react-native'
+import { Text, StyleSheet, Dimensions, View, Pressable, Switch, ActivityIndicator } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { showMessage } from 'react-native-flash-message'
@@ -13,11 +13,13 @@ import { create } from '../api/SubjectEndpoints'
 
 export default function CourseInfoScreen ({ navigation, route }) {
   const [currentCourse, setCurrentCourse] = useState({})
-  const [studies, setStudies] = useState(route.params.currentStudies)
   const [showModal, setShowModal] = useState(false)
-  const [initialValues, setInitialValues] = useState({ name: null, shortName: null, isAnual: false, secondSemester: false, credits: null })
+  const initialValues = { name: null, shortName: null, isAnual: false, secondSemester: false, credits: null }
   const [backendErrors, setBackendErrors] = useState()
   const [isCreated, setIsCreated] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  const studies = route.params.currentStudies
 
   const validationSchema = yup.object().shape({
     name: yup
@@ -49,22 +51,23 @@ export default function CourseInfoScreen ({ navigation, route }) {
     screen: screenDimensions
   })
 
-  async function fetchCourse (id) {
-    try {
-      const fetchedCourse = await getDetail(id)
-      setCurrentCourse(fetchedCourse)
-    } catch (error) {
-      showMessage({
-        message: `There was an error while retrieving this course. ${error} `,
-        type: 'error',
-        style: GlobalStyles.flashStyle,
-        titleStyle: GlobalStyles.flashTextStyle
-      })
-    }
-  }
-
   useEffect(() => {
+    async function fetchCourse (id) {
+      try {
+        const fetchedCourse = await getDetail(id)
+        setCurrentCourse(fetchedCourse)
+      } catch (error) {
+        showMessage({
+          message: `There was an error while retrieving this course. ${error} `,
+          type: 'error',
+          style: GlobalStyles.flashStyle,
+          titleStyle: GlobalStyles.flashTextStyle
+        })
+      }
+    }
+    setLoading(true)
     fetchCourse(route.params.id)
+    setLoading(false)
     if (isCreated) { setIsCreated(false) }
   }, [route, isCreated])
 
@@ -108,7 +111,11 @@ export default function CourseInfoScreen ({ navigation, route }) {
   }
 
   return (
-    <View style={{ padding: 20 }}>
+    loading
+      ? <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+      <ActivityIndicator/>
+    </View>
+      : <View style={{ padding: 20 }}>
 
       <View style={{ marginVertical: 10 }}>
         <Text>{studies.name} - {courseMapper[currentCourse.number]} course</Text>
@@ -143,7 +150,9 @@ export default function CourseInfoScreen ({ navigation, route }) {
       </View>
       <Pressable
         style={{ padding: 10, alignSelf: 'center', backgroundColor: 'blue', margin: 10, borderRadius: 15 }}
-        onPress={() => { setShowModal(true) }}
+        onPress={() => {
+          setShowModal(true)
+        }}
       >
         <Text style={{ fontWeight: 500, color: 'white' }}>
           Add subject
@@ -153,104 +162,111 @@ export default function CourseInfoScreen ({ navigation, route }) {
         isVisible={showModal}
         onCancel={() => setShowModal(false)}
       >
-        <View style={{ maxHeight: dimensions.window.width < 450 ? 500 : 680, width: '90%' }}>
-          <Text style={{ fontSize: 15, textAlign: 'center', marginBottom: 5 }}>Please add new subject info</Text>
+        {
+          currentCourse.subjects?.map((s) => s.credits).reduce((accumulator, currentValue) => {
+            return accumulator + currentValue
+          }, 0) >= currentCourse.credits
+            ? <View>
+            <Text>You have already covered {currentCourse.credits} credits.</Text>
+          </View>
+            : <View style={{ maxHeight: dimensions.window.width < 450 ? 500 : 680, width: '90%' }}>
+            <Text style={{ fontSize: 15, textAlign: 'center', marginBottom: 5 }}>Please add new subject info</Text>
 
-          <Formik
-            validationSchema={validationSchema}
-            initialValues={initialValues}
-            onSubmit={createSubject}>
-            {({ handleSubmit, setFieldValue, values }) => (
-              <>
-              <InputItem
-                name='name'
-                label='Name:'
-              />
-              <InputItem
-                name='shortName'
-                label='Short name:'
-              />
-              <InputItem
-                name='credits'
-                label='Number of credits:'
-              />
-
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ marginVertical: 10, marginHorizontal: 5, marginLeft: 13 }}>Is anual:</Text>
-                <Switch
-                  trackColor={{ false: GlobalStyles.brandSecondary, true: GlobalStyles.brandPrimary }}
-                  thumbColor={values.isAnual ? GlobalStyles.brandSecondary : '#f4f3f4'}
-                  value={values.isAnual}
-                  style={{ marginHorizontal: 5 }}
-                  onValueChange={value =>
-                    setFieldValue('isAnual', value)
-                  }
+            <Formik
+              validationSchema={validationSchema}
+              initialValues={initialValues}
+              onSubmit={createSubject}>
+              {({ handleSubmit, setFieldValue, values }) => (
+                <>
+                <InputItem
+                  name='name'
+                  label='Name:'
                 />
-                <ErrorMessage name={'isAnual'} render={msg => <Text>{msg}</Text> }/>
-              </View>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ flexDirection: 'row', marginVertical: 5, marginHorizontal: 13, alignItems: 'center', alignSelf: dimensions.window.width < 450 ? 'center' : 'flex-start' }}>
-                <Text>1st Semester</Text>
-                <Switch
-                  trackColor={{ false: GlobalStyles.brandSecondary, true: GlobalStyles.brandPrimary }}
-                  thumbColor={values.secondSemester ? GlobalStyles.brandSecondary : '#f4f3f4'}
-                  value={values.secondSemester}
-                  style={{ marginHorizontal: 5 }}
-                  onValueChange={value =>
-                    setFieldValue('secondSemester', value)
-                  }
+                <InputItem
+                  name='shortName'
+                  label='Short name:'
                 />
-                <ErrorMessage name={'secondSemester'} render={msg => <Text>{msg}</Text> }/>
-                <Text>2nd Semester</Text>
-              </View>
-              </View>
+                <InputItem
+                  name='credits'
+                  label='Number of credits:'
+                />
 
-              {backendErrors &&
-                backendErrors.map((error, index) => <Text key={index} style={{ color: 'red' }}>{error.param}-{error.msg}</Text>)
-              }
-
-              <Pressable
-                onPress={() => setShowModal(false)}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: pressed
-                      ? GlobalStyles.brandPrimary
-                      : GlobalStyles.brandPrimaryTap
-                  },
-                  styles.actionButton]}
-              >
-                <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-                  <MaterialCommunityIcons name='close' color='white' size={20}/>
-                  <Text style={styles.text}>
-                    Cancel
-                  </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ marginVertical: 10, marginHorizontal: 5, marginLeft: 13 }}>Is anual:</Text>
+                  <Switch
+                    trackColor={{ false: GlobalStyles.brandSecondary, true: GlobalStyles.brandPrimary }}
+                    thumbColor={values.isAnual ? GlobalStyles.brandSecondary : '#f4f3f4'}
+                    value={values.isAnual}
+                    style={{ marginHorizontal: 5 }}
+                    onValueChange={value =>
+                      setFieldValue('isAnual', value)
+                    }
+                  />
+                  <ErrorMessage name={'isAnual'} render={msg => <Text>{msg}</Text> }/>
                 </View>
-              </Pressable>
 
-              <Pressable
-                onPress={handleSubmit}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: pressed
-                      ? GlobalStyles.brandSuccessTap
-                      : GlobalStyles.brandSuccess
-                  },
-                  styles.actionButton]}
-              >
-                <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-                  <MaterialCommunityIcons name='check' color='white' size={20}/>
-                  <Text style={styles.text}>
-                    Create
-                  </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', marginVertical: 5, marginHorizontal: 13, alignItems: 'center', alignSelf: dimensions.window.width < 450 ? 'center' : 'flex-start' }}>
+                  <Text>1st Semester</Text>
+                  <Switch
+                    trackColor={{ false: GlobalStyles.brandSecondary, true: GlobalStyles.brandPrimary }}
+                    thumbColor={values.secondSemester ? GlobalStyles.brandSecondary : '#f4f3f4'}
+                    value={values.secondSemester}
+                    style={{ marginHorizontal: 5 }}
+                    onValueChange={value =>
+                      setFieldValue('secondSemester', value)
+                    }
+                  />
+                  <ErrorMessage name={'secondSemester'} render={msg => <Text>{msg}</Text> }/>
+                  <Text>2nd Semester</Text>
                 </View>
-              </Pressable>
+                </View>
 
-              </>
-            )}
-          </Formik>
-        </View>
+                {backendErrors &&
+                  backendErrors.map((error, index) => <Text key={index} style={{ color: 'red' }}>{error.param}-{error.msg}</Text>)
+                }
 
+                <Pressable
+                  onPress={() => setShowModal(false)}
+                  style={({ pressed }) => [
+                    {
+                      backgroundColor: pressed
+                        ? GlobalStyles.brandPrimary
+                        : GlobalStyles.brandPrimaryTap
+                    },
+                    styles.actionButton]}
+                >
+                  <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+                    <MaterialCommunityIcons name='close' color='white' size={20}/>
+                    <Text style={styles.text}>
+                      Cancel
+                    </Text>
+                  </View>
+                </Pressable>
+
+                <Pressable
+                  onPress={handleSubmit}
+                  style={({ pressed }) => [
+                    {
+                      backgroundColor: pressed
+                        ? GlobalStyles.brandSuccessTap
+                        : GlobalStyles.brandSuccess
+                    },
+                    styles.actionButton]}
+                >
+                  <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+                    <MaterialCommunityIcons name='check' color='white' size={20}/>
+                    <Text style={styles.text}>
+                      Create
+                    </Text>
+                  </View>
+                </Pressable>
+
+                </>
+              )}
+            </Formik>
+          </View>
+       }
       </CreateStudiesModal>
     </View>
   )
