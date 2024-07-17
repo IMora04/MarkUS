@@ -9,12 +9,15 @@ import { ErrorMessage, Formik } from 'formik'
 import * as yup from 'yup'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import InputItem from '../components/InputItem'
+import { create } from '../api/SubjectEndpoints'
 
 export default function CourseInfoScreen ({ navigation, route }) {
   const [currentCourse, setCurrentCourse] = useState({})
   const [studies, setStudies] = useState(route.params.currentStudies)
   const [showModal, setShowModal] = useState(false)
-  const [initialValues, setInitialValues] = useState({ name: null, shortName: null, isAnual: null, secondSemester: null, credits: null })
+  const [initialValues, setInitialValues] = useState({ name: null, shortName: null, isAnual: false, secondSemester: false, credits: null })
+  const [backendErrors, setBackendErrors] = useState()
+  const [isCreated, setIsCreated] = useState(false)
 
   const validationSchema = yup.object().shape({
     name: yup
@@ -62,7 +65,8 @@ export default function CourseInfoScreen ({ navigation, route }) {
 
   useEffect(() => {
     fetchCourse(route.params.id)
-  }, [route])
+    if (isCreated) { setIsCreated(false) }
+  }, [route, isCreated])
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener(
@@ -82,6 +86,25 @@ export default function CourseInfoScreen ({ navigation, route }) {
       </Text>
     </View>
     )
+  }
+
+  const createSubject = async (values) => {
+    setBackendErrors([])
+    try {
+      values.courseId = currentCourse.id
+      const createdSubject = await create(values)
+      showMessage({
+        message: `Subject ${createdSubject.name} succesfully created`,
+        type: 'success',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+      setShowModal(false)
+      setIsCreated(true)
+    } catch (error) {
+      console.log(error)
+      setBackendErrors(error.errors)
+    }
   }
 
   return (
@@ -136,7 +159,7 @@ export default function CourseInfoScreen ({ navigation, route }) {
           <Formik
             validationSchema={validationSchema}
             initialValues={initialValues}
-            onSubmit={() => {}}>
+            onSubmit={createSubject}>
             {({ handleSubmit, setFieldValue, values }) => (
               <>
               <InputItem
@@ -183,6 +206,10 @@ export default function CourseInfoScreen ({ navigation, route }) {
               </View>
               </View>
 
+              {backendErrors &&
+                backendErrors.map((error, index) => <Text key={index} style={{ color: 'red' }}>{error.param}-{error.msg}</Text>)
+              }
+
               <Pressable
                 onPress={() => setShowModal(false)}
                 style={({ pressed }) => [
@@ -202,7 +229,7 @@ export default function CourseInfoScreen ({ navigation, route }) {
               </Pressable>
 
               <Pressable
-                onPress={async () => { } }
+                onPress={handleSubmit}
                 style={({ pressed }) => [
                   {
                     backgroundColor: pressed
@@ -225,10 +252,6 @@ export default function CourseInfoScreen ({ navigation, route }) {
         </View>
 
       </CreateStudiesModal>
-      <Text>
-        { JSON.stringify(currentCourse, null, '\t')
-        }
-      </Text>
     </View>
   )
 }

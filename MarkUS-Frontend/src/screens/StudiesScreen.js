@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Pressable, Text, View, StyleSheet, ScrollView, Switch, Image, Dimensions } from 'react-native'
+import { Pressable, Text, View, StyleSheet, ScrollView, Switch, Image, Dimensions, ActivityIndicator } from 'react-native'
 import { AuthorizationContext } from '../context/AuthorizationContext'
 import { getAll, create, update, remove } from '../api/StudiesEndpoints'
 import { showMessage } from 'react-native-flash-message'
@@ -25,6 +25,7 @@ export default function StudiesScreen ({ navigation, route }) {
   const [backendErrors, setBackendErrors] = useState()
   const [editingId, setEditingId] = useState(null)
   const [editedOrDeleted, setEditedOrDeleted] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const [initialValues, setInitialValues] = useState({ name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null })
   const validationSchema = yup.object().shape({
@@ -93,7 +94,9 @@ export default function StudiesScreen ({ navigation, route }) {
         })
       }
     }
+    setLoading(true)
     fetchStudies()
+    setLoading(false)
   }, [isFocused, loggedInUser, editedOrDeleted])
 
   const pickImage = async (onSuccess) => {
@@ -194,8 +197,8 @@ export default function StudiesScreen ({ navigation, route }) {
             setEditingId(null)
           }}
           >
-          <View style={{ flexDirection: 'row', alignItems: 'center', width: 118, justifyContent: 'center' }}>
-            <MaterialCommunityIcons name={editing ? 'cancel' : 'pencil'} color={'white'} size={20}/>
+          <View style={{ flexDirection: 'row', alignItems: 'center', width: 120, justifyContent: 'center' }}>
+            <MaterialCommunityIcons name={editing ? 'cancel' : 'pencil'} color={'white'} size={15}/>
             <Text style={{ margin: 5, color: 'white' }}>{editing ? 'Cancel edition' : 'Edit studies'}</Text>
           </View>
         </Pressable>
@@ -204,7 +207,11 @@ export default function StudiesScreen ({ navigation, route }) {
   }
 
   return (
-    <View style={{ margin: 20 }}>
+    loading
+      ? <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+        <ActivityIndicator />
+      </View>
+      : <View style={{ margin: 20 }}>
       {
         loggedInUser
           ? <>
