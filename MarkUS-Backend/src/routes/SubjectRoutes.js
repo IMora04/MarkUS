@@ -7,11 +7,12 @@ import { handleFilesUpload } from '../middlewares/FileHandlerMiddleware.js'
 import SubjectController from '../controllers/SubjectController.js'
 
 const loadFileRoutes = function (app) {
+  //TODO: All
   app.route('/subjects')
-  .post(
-    isLoggedIn,
-    SubjectController.create
-  )
+    .post(
+      isLoggedIn,
+      SubjectController.create
+    )
 }
 
 export default loadFileRoutes

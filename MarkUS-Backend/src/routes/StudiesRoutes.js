@@ -7,7 +7,8 @@ import { checkEntityExists } from '../middlewares/EntityMiddleware.js'
 import { handleFilesUpload } from '../middlewares/FileHandlerMiddleware.js'
 
 const loadFileRoutes = function (app) {
-    app.route('/studies')
+  //TODO: All
+  app.route('/studies')
     .get(
       isLoggedIn,
       StudiesController.index
@@ -16,6 +17,8 @@ const loadFileRoutes = function (app) {
       isLoggedIn,
       StudiesController.create
     )
+    
+  //TODO: All
   app.route('/studies/:studiesId')
     .get(
       isLoggedIn,
