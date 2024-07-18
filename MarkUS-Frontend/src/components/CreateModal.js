@@ -5,38 +5,37 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 export default function CreateModal (props) {
   return (
-    <>
+    <Modal
+    presentationStyle='overFullScreen'
+    animationType='fade'
+    transparent={true}
+    visible={props.isVisible}
+    onRequestClose={props.onCancel}
+    >
       {
         props.isVisible &&
         <BlurView
         style={styles.absolute}
-        tint="light"
+        tint='light'
         intensity={10}
         experimentalBlurMethod='dimezisBlurView'
         />
       }
-      <Modal
-      presentationStyle='overFullScreen'
-      animationType='fade'
-      transparent={true}
-      visible={props.isVisible}
-      onRequestClose={props.onCancel}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
 
-              <Pressable
-              style={{ marginTop: -21, alignSelf: 'flex-end', marginRight: -22 }}
-              onPress={props.onCancel}
-              >
-                <MaterialCommunityIcons name='close' color={'black'} size={20}/>
-              </Pressable>
+            <Pressable
+            style={{ marginTop: -21, alignSelf: 'flex-end', marginRight: -22 }}
+            onPress={props.onCancel}
+            >
+              <MaterialCommunityIcons name='close' color={'black'} size={20}/>
+            </Pressable>
 
-            {props.children}
+          {props.children}
 
-          </View>
         </View>
-      </Modal>
-    </>
+      </View>
+    </Modal>
   )
 }
 

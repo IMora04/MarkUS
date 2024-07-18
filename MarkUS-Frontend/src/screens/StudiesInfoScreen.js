@@ -149,15 +149,17 @@ export default function StudiesInfoScreen ({ navigation, route }) {
 
   const renderEmptyCourses = () => {
     return (
+      <>
       <View style={[styles.coursesCard, { alignItems: 'center' }]}>
         <View style={{ margin: 10 }}>
           <Text style={{ textAlign: 'center' }}>No courses found ({currentStudies.years} expected). Do you want to add a new course to {currentStudies.name}?</Text>
-          <AddButton
-          name='course'
-          onCreate={() => setShowModal(true)}
-          />
         </View>
       </View>
+      <AddButton
+      name='course'
+      onCreate={() => setShowModal(true)}
+      />
+      </>
     )
   }
 
@@ -172,6 +174,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
           onSelectItem={ item => {
             fetchOneStudies(item.value)
           }}
+          listMode={'SCROLLVIEW'}
           setItems={setStudiesNames}
           placeholder="Select studies"
           style={{ backgroundColor: GlobalStyles.brandBackground }}
