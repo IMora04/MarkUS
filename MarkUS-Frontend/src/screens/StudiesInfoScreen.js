@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Pressable, Text, View, StyleSheet, Dimensions, ActivityIndicator } from 'react-native'
+import { Pressable, Text, View, StyleSheet, Dimensions, ActivityIndicator, ScrollView } from 'react-native'
 import { AuthorizationContext } from '../context/AuthorizationContext'
 import { getAll, getDetail } from '../api/StudiesEndpoints'
+import { create } from '../api/CourseEndpoints'
 import { showMessage } from 'react-native-flash-message'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { useIsFocused } from '@react-navigation/native'
@@ -9,14 +10,34 @@ import { FlatList } from 'react-native-gesture-handler'
 import { ProgressCircle } from 'react-native-svg-charts'
 import DropDownPicker from 'react-native-dropdown-picker'
 import CourseAdder from '../components/CourseAdder'
+import CreateModal from '../components/CreateModal'
+import { Formik } from 'formik'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import InputItem from '../components/InputItem'
+import * as yup from 'yup'
 
 export default function StudiesInfoScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
   const [open, setOpen] = useState(false)
   const [currentStudies, setCurrentStudies] = useState({})
-  const [studies, setStudies] = useState([])
-  const [stats, setStats] = useState([])
+  const [studiesNames, setStudiesNames] = useState([])
   const [loading, setLoading] = useState(true)
+  const [backendErrors, setBackendErrors] = useState()
+  const [showModal, setShowModal] = useState(false)
+
+  const initialValues = { credits: null, number: null }
+  const validationSchema = yup.object().shape({
+    number: yup
+      .number()
+      .positive('The course year must be positive')
+      .integer('The course year must be integer')
+      .required('The course year is required'),
+    credits: yup
+      .number()
+      .positive('The number of credits must be positive')
+      .integer('The number of credits must be integer')
+      .required('The number of credits is required')
+  })
 
   const isFocused = useIsFocused()
 
@@ -66,7 +87,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
         return
       }
       if (!loggedInUser) {
-        setStudies([])
+        setStudiesNames([])
         return
       }
       try {
@@ -77,7 +98,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
             value: e.id
           }
         })
-        setStudies(fetchedStudiesReshaped)
+        setStudiesNames(fetchedStudiesReshaped)
       } catch (error) {
         showMessage({
           message: `There was an error while retrieving studies. ${error} `,
@@ -92,32 +113,35 @@ export default function StudiesInfoScreen ({ navigation, route }) {
     setLoading(false)
   }, [isFocused, loggedInUser])
 
-  useEffect(() => {
-    if (Object.keys(currentStudies).length === 0) return
-    const stats = {}
-    stats.completion = (currentStudies.courses.filter((c) => c.status === 'taken').length) / currentStudies.years
-    const subjects = currentStudies.courses.flatMap((c) => c.subjects)
-    const takenSubjects = currentStudies.courses.filter((c) => c.status === 'taken').flatMap((c) => c.subjects)
-    stats.provisionalAvg = (subjects.reduce((acc, cv) => acc + cv.credits * cv.avgMark, 0)) / (subjects.reduce((acc, cv) => acc + cv.credits, 0)) || 0
-    stats.officialAvg = (subjects.reduce((acc, cv) => acc + cv.credits * cv.officialMark, 0)) / (subjects.reduce((acc, cv) => acc + cv.credits, 0)) || 0
-    stats.provisionalTakenAvg = (takenSubjects.reduce((acc, cv) => acc + cv.credits * cv.avgMark, 0)) / (takenSubjects.reduce((acc, cv) => acc + cv.credits, 0)) || 0
-    stats.officialTakenAvg = (takenSubjects.reduce((acc, cv) => acc + cv.credits * cv.officialMark, 0)) / (takenSubjects.reduce((acc, cv) => acc + cv.credits, 0)) || 0
-    if (subjects.length !== 0) {
-      stats.topSubjects = subjects.sort(
+  let stats = (Object.keys(currentStudies).length !== 0)
+    ? {
+        completion: (currentStudies.courses.filter((c) => c.status === 'taken').length) / currentStudies.years,
+        subjects: currentStudies.courses.flatMap((c) => c.subjects),
+        takenSubjects: currentStudies.courses.filter((c) => c.status === 'taken').flatMap((c) => c.subjects)
+      }
+    : {}
+
+  stats = {
+    ...stats,
+    provisionalAvg: (stats.subjects?.reduce((acc, cv) => acc + cv.credits * cv.avgMark, 0)) / (stats.subjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0,
+    officialAvg: (stats.subjects?.reduce((acc, cv) => acc + cv.credits * cv.officialMark, 0)) / (stats.subjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0,
+    provisionalTakenAvg: (stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits * cv.avgMark, 0)) / (stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0,
+    officialTakenAvg: (stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits * cv.officialMark, 0)) / (stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0,
+    topSubjects: (stats.subjects?.length !== 0)
+      ? stats.subjects?.sort(
         function (a, b) {
           return a.officialMark - b.officialMark
         }).slice(-5).map((s) => s.name + ': ' + (s.officialMark || 0) + ' (' + s.credits + ' credits)')
-    }
-    setStats(stats)
-  }, [currentStudies])
+      : null
+  }
 
   const renderCourse = ({ item }) => {
     return (
       <View style={styles.coursesCard}>
         <Pressable
         style={{ margin: 10 }}
-        onPress={() => { navigation.navigate('Course info', { id: item.id, currentStudies }) }}>
-          <Text>{courseMapper[item.id]} course</Text>
+        onPress={() => { navigation.navigate('Course info', { id: item.id, currentStudies: currentStudies.name }) }}>
+          <Text>{courseMapper[item.number]} course</Text>
         </Pressable>
       </View>
     )
@@ -128,7 +152,9 @@ export default function StudiesInfoScreen ({ navigation, route }) {
       <View style={[styles.coursesCard, { alignItems: 'center' }]}>
         <View style={{ margin: 10 }}>
           <Text style={{ textAlign: 'center' }}>No courses found ({currentStudies.years} expected). Do you want to add a new course to {currentStudies.name}?</Text>
-          <CourseAdder/>
+          <CourseAdder
+            onPress={() => { setShowModal(true) }}
+          />
         </View>
       </View>
     )
@@ -140,12 +166,12 @@ export default function StudiesInfoScreen ({ navigation, route }) {
         <DropDownPicker
           open={open}
           value={currentStudies.id}
-          items={studies}
+          items={studiesNames}
           setOpen={setOpen}
           onSelectItem={ item => {
             fetchOneStudies(item.value)
           }}
-          setItems={setStudies}
+          setItems={setStudiesNames}
           placeholder="Select studies"
           style={{ backgroundColor: GlobalStyles.brandBackground }}
           dropDownStyle={{ backgroundColor: '#fafafa' }}
@@ -159,7 +185,6 @@ export default function StudiesInfoScreen ({ navigation, route }) {
       <View style={{ minHeight: 100, minWidth: 100, justifyContent: 'center', marginRight: 20 }}>
         <View style={{ position: 'absolute', alignSelf: 'center', height: 100, width: 80, justifyContent: 'center' }}>
           <Text style={{ textAlign: 'center' }}>{stats.completion * 100}% completed</Text>
-
         </View>
         <ProgressCircle style={{ minHeight: 100, minWidth: 100 }} progress={stats.completion || 0} progressColor={GlobalStyles.appPurple} strokeWidth={8}/>
       </View>
@@ -192,7 +217,9 @@ export default function StudiesInfoScreen ({ navigation, route }) {
             <Text>{currentStudies.courses.length}/{currentStudies.years} courses added.</Text>
             {
               (currentStudies.courses.length !== currentStudies.years) &&
-              <CourseAdder/>
+              <CourseAdder
+              onPress={() => { setShowModal(true) }}
+              />
             }
           </View>
             : <></>
@@ -201,13 +228,31 @@ export default function StudiesInfoScreen ({ navigation, route }) {
     )
   }
 
+  const createCourse = async (values) => {
+    setBackendErrors([])
+    try {
+      values.studiesId = currentStudies.id
+      const createdCourse = await create(values)
+      showMessage({
+        message: `Course ${createdCourse.name} succesfully created`,
+        type: 'success',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+      setShowModal(false)
+      await fetchOneStudies(route.params.id)
+    } catch (error) {
+      setBackendErrors(error.errors)
+    }
+  }
+
   return (
     loading
       ? <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
       <ActivityIndicator/>
     </View>
-      : <View style={{ padding: 20 }}>
-
+      : <ScrollView>
+      <View style={{ padding: 20 }}>
         {
           renderStudiesSelector()
         }
@@ -245,11 +290,102 @@ export default function StudiesInfoScreen ({ navigation, route }) {
         {
           renderCourses()
         }
+        <CreateModal
+        isVisible={showModal}
+        onCancel={() => {
+          setShowModal(false)
+          setBackendErrors()
+        }}
+        >
 
-    </View>
+          <View style={{ maxHeight: dimensions.window.width < 450 ? 500 : 680, width: '90%' }}>
+            <Text style={{ fontSize: 15, textAlign: 'center', marginBottom: 5 }}>Introduce new course details</Text>
+            <Formik
+            validationSchema={validationSchema}
+            initialValues={initialValues}
+            onSubmit={createCourse}>
+            {({ handleSubmit, setFieldValue, values }) => (
+              <>
+              <View style={{ marginVertical: 10 }}>
+                <InputItem
+                  name='number'
+                  label='Course number (year):'
+                />
+                <InputItem
+                  name='credits'
+                  label='Number of credits:'
+                />
+              </View>
+
+              {backendErrors &&
+                backendErrors.map((error, index) => <Text key={index} style={{ color: 'red' }}>{error.param}: {error.msg}</Text>)
+              }
+
+              <Pressable
+                onPress={() => {
+                  setShowModal(false)
+                  setBackendErrors()
+                }}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed
+                      ? GlobalStyles.brandPrimary
+                      : GlobalStyles.brandPrimaryTap
+                  },
+                  styles.actionButton]}
+              >
+                <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+                  <MaterialCommunityIcons name='close' color={'white'} size={20}/>
+                  <Text style={styles.text}>
+                    Cancel
+                  </Text>
+                </View>
+              </Pressable>
+
+              <Pressable
+                onPress={handleSubmit}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed
+                      ? GlobalStyles.brandSuccessTap
+                      : GlobalStyles.brandSuccess
+                  },
+                  styles.actionButton]}
+                >
+                <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+                  <MaterialCommunityIcons name={'check'} color={'white'} size={20}/>
+                  <Text style={styles.text}>
+                    Create
+                  </Text>
+                </View>
+              </Pressable>
+              </>
+            )}
+            </Formik>
+          </View>
+
+        </CreateModal>
+
+      </View>
+    </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
-  coursesCard: { backgroundColor: 'white', marginVertical: 5, borderRadius: 15 }
+  coursesCard: { backgroundColor: 'white', marginVertical: 5, borderRadius: 15 },
+  actionButton: {
+    borderRadius: 8,
+    height: 40,
+    margin: 8,
+    padding: 10,
+    alignSelf: 'center',
+    flexDirection: 'column',
+    width: '50%'
+  },
+  text: {
+    fontSize: 16,
+    color: 'white',
+    alignSelf: 'center',
+    marginLeft: 5
+  }
 })

@@ -14,12 +14,11 @@ import { create } from '../api/SubjectEndpoints'
 export default function CourseInfoScreen ({ navigation, route }) {
   const [currentCourse, setCurrentCourse] = useState({})
   const [showModal, setShowModal] = useState(false)
-  const initialValues = { name: null, shortName: null, isAnual: false, secondSemester: false, credits: null }
   const [backendErrors, setBackendErrors] = useState()
-  const [isCreated, setIsCreated] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  const studies = route.params.currentStudies
+  const initialValues = { name: null, shortName: null, isAnual: false, secondSemester: false, credits: null }
+  const studiesName = route.params.currentStudies
 
   const validationSchema = yup.object().shape({
     name: yup
@@ -51,25 +50,25 @@ export default function CourseInfoScreen ({ navigation, route }) {
     screen: screenDimensions
   })
 
-  useEffect(() => {
-    async function fetchCourse (id) {
-      try {
-        const fetchedCourse = await getDetail(id)
-        setCurrentCourse(fetchedCourse)
-      } catch (error) {
-        showMessage({
-          message: `There was an error while retrieving this course. ${error} `,
-          type: 'error',
-          style: GlobalStyles.flashStyle,
-          titleStyle: GlobalStyles.flashTextStyle
-        })
-      }
+  async function fetchCourse (id) {
+    try {
+      const fetchedCourse = await getDetail(id)
+      setCurrentCourse(fetchedCourse)
+    } catch (error) {
+      showMessage({
+        message: `There was an error while retrieving this course. ${error} `,
+        type: 'error',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
     }
+  }
+
+  useEffect(() => {
     setLoading(true)
     fetchCourse(route.params.id)
     setLoading(false)
-    if (isCreated) { setIsCreated(false) }
-  }, [route, isCreated])
+  }, [route])
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener(
@@ -83,11 +82,14 @@ export default function CourseInfoScreen ({ navigation, route }) {
 
   const renderSubject = ({ item }) => {
     return (
-    <View style={styles.box}>
-      <Text style={{ textAlign: 'center' }}>
+    <Pressable
+      style={styles.box}
+      onPress={() => { navigation.navigate('Subject info', { id: item.id, currentCourse }) }}
+    >
+      <Text style={{ textAlign: 'center', padding: 10 }}>
         {dimensions.window.width > 450 ? item.name : item.shortName}: {item.officialMark ? item.officialMark : (item.avgMark ? item.avgMark : 'No marks yet') }
       </Text>
-    </View>
+    </Pressable>
     )
   }
 
@@ -103,7 +105,7 @@ export default function CourseInfoScreen ({ navigation, route }) {
         titleStyle: GlobalStyles.flashTextStyle
       })
       setShowModal(false)
-      setIsCreated(true)
+      await fetchCourse(route.params.id)
     } catch (error) {
       console.log(error)
       setBackendErrors(error.errors)
@@ -116,9 +118,8 @@ export default function CourseInfoScreen ({ navigation, route }) {
       <ActivityIndicator/>
     </View>
       : <View style={{ padding: 20 }}>
-
       <View style={{ marginVertical: 10 }}>
-        <Text>{studies.name} - {courseMapper[currentCourse.number]} course</Text>
+        <Text>{studiesName} - {courseMapper[currentCourse.number]} course</Text>
       </View>
 
       <View style={{ flexDirection: 'row' }}>

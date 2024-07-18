@@ -6,7 +6,7 @@ import { showMessage } from 'react-native-flash-message'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { FlatList } from 'react-native-gesture-handler'
 import { useIsFocused } from '@react-navigation/native'
-import CreateStudiesModal from '../components/CreateModal'
+import CreateModal from '../components/CreateModal'
 import { ErrorMessage, Formik } from 'formik'
 import InputItem from '../components/InputItem'
 import * as yup from 'yup'
@@ -19,13 +19,13 @@ export default function StudiesScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
   const [studies, setStudies] = useState([])
   const isFocused = useIsFocused()
-  const [showModal, setShowModal] = useState(false)
+  const [showCreateModal, setShowCreateModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [editing, setEditing] = useState(false)
   const [backendErrors, setBackendErrors] = useState()
   const [editingId, setEditingId] = useState(null)
-  const [editedOrDeleted, setEditedOrDeleted] = useState(false)
   const [loading, setLoading] = useState(true)
+
+  const editing = editingId !== null
 
   const [initialValues, setInitialValues] = useState({ name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null })
   const validationSchema = yup.object().shape({
@@ -72,32 +72,32 @@ export default function StudiesScreen ({ navigation, route }) {
     return () => subscription?.remove()
   })
 
-  useEffect(() => {
-    async function fetchStudies () {
-      if (!isFocused) {
-        return
-      }
-      if (!loggedInUser) {
-        setStudies([])
-        return
-      }
-      try {
-        const fetchedStudies = await getAll()
-        setStudies(fetchedStudies)
-        if (editedOrDeleted) { setEditedOrDeleted(false) }
-      } catch (error) {
-        showMessage({
-          message: `There was an error while retrieving studies. ${error} `,
-          type: 'error',
-          style: GlobalStyles.flashStyle,
-          titleStyle: GlobalStyles.flashTextStyle
-        })
-      }
+  async function fetchStudies () {
+    if (!isFocused) {
+      return
     }
+    if (!loggedInUser) {
+      setStudies([])
+      return
+    }
+    try {
+      const fetchedStudies = await getAll()
+      setStudies(fetchedStudies)
+    } catch (error) {
+      showMessage({
+        message: `There was an error while retrieving studies. ${error} `,
+        type: 'error',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+    }
+  }
+
+  useEffect(() => {
     setLoading(true)
     fetchStudies()
     setLoading(false)
-  }, [isFocused, loggedInUser, editedOrDeleted])
+  }, [isFocused, loggedInUser])
 
   const pickImage = async (onSuccess) => {
     const result = await ExpoImagePicker.launchImageLibraryAsync({
@@ -123,10 +123,9 @@ export default function StudiesScreen ({ navigation, route }) {
         style: GlobalStyles.flashStyle,
         titleStyle: GlobalStyles.flashTextStyle
       })
-      setShowModal(false)
+      setShowCreateModal(false)
       navigation.navigate('Studies info', { id: createdStudies.id })
     } catch (error) {
-      console.log(error)
       setBackendErrors(error.errors)
     }
   }
@@ -141,12 +140,11 @@ export default function StudiesScreen ({ navigation, route }) {
         style: GlobalStyles.flashStyle,
         titleStyle: GlobalStyles.flashTextStyle
       })
-      setShowModal(false)
-      setEditing(false)
-      setEditedOrDeleted(true)
+      setShowCreateModal(false)
+      fetchStudies()
       setInitialValues({ name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null })
+      setEditingId(null)
     } catch (error) {
-      console.log(error)
       setBackendErrors(error.errors)
     }
   }
@@ -155,8 +153,8 @@ export default function StudiesScreen ({ navigation, route }) {
     try {
       await remove(id)
       setShowDeleteModal(false)
-      setEditedOrDeleted(true)
-      setEditing(false)
+      fetchStudies()
+      setEditingId(null)
       showMessage({
         message: 'Studies succesfully removed',
         type: 'success',
@@ -181,7 +179,7 @@ export default function StudiesScreen ({ navigation, route }) {
           !editing &&
           <Pressable
             style={[styles.homeButton, { backgroundColor: 'green' }]}
-            onPress={() => { setShowModal(true) }}
+            onPress={() => { setShowCreateModal(true) }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <MaterialCommunityIcons name='plus' color={'white'} size={20}/>
@@ -193,8 +191,7 @@ export default function StudiesScreen ({ navigation, route }) {
           style={[styles.homeButton, { backgroundColor: editing ? 'red' : 'blue' }]}
           onPress={() => {
             setInitialValues({ name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null })
-            setEditing(!editing)
-            setEditingId(null)
+            setEditingId(editingId === null ? 0 : null)
           }}
           >
           <View style={{ flexDirection: 'row', alignItems: 'center', width: 120, justifyContent: 'center' }}>
@@ -236,7 +233,7 @@ export default function StudiesScreen ({ navigation, route }) {
                 editing
                   ? () => {
                       setInitialValues({ name: item.name, credits: item.credits, description: item.description, logo: item.logo, hasTrimesters: item.hasTrimesters, years: item.years })
-                      setShowModal(true)
+                      setShowCreateModal(true)
                       setEditingId(item.id)
                     }
                   : () => { navigation.navigate('Studies info', { id: item.id }) }
@@ -256,12 +253,12 @@ export default function StudiesScreen ({ navigation, route }) {
               renderHomeButtons()
             }
 
-            <CreateStudiesModal
-              isVisible={showModal}
-              onCancel={() => setShowModal(false)}
+            <CreateModal
+              isVisible={showCreateModal}
+              onCancel={() => setShowCreateModal(false)}
             >
               <View style={{ maxHeight: dimensions.window.width < 450 ? 500 : 680, width: '90%' }}>
-                <Text style={{ fontSize: 15, textAlign: 'center', marginBottom: 5 }}>Please add new studies info</Text>
+                <Text style={{ fontSize: 15, textAlign: 'center', marginBottom: 5 }}>Introduce new studies details</Text>
 
                 <Formik
                   validationSchema={validationSchema}
@@ -332,7 +329,7 @@ export default function StudiesScreen ({ navigation, route }) {
                     </ScrollView>
 
                     <Pressable
-                      onPress={() => setShowModal(false)}
+                      onPress={() => setShowCreateModal(false)}
                       style={({ pressed }) => [
                         {
                           backgroundColor: pressed
@@ -362,7 +359,7 @@ export default function StudiesScreen ({ navigation, route }) {
                       <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
                         <MaterialCommunityIcons name={editing ? 'content-save' : 'check'} color={'white'} size={20}/>
                         <Text style={styles.text}>
-                          {editing ? 'Confirm edition' : 'Create'}
+                          {editing ? 'Confirm' : 'Create'}
                         </Text>
                       </View>
                     </Pressable>
@@ -372,7 +369,7 @@ export default function StudiesScreen ({ navigation, route }) {
                 </Formik>
               </View>
 
-            </CreateStudiesModal>
+            </CreateModal>
             <DeleteModal
               isVisible={showDeleteModal}
               onCancel={() => setShowDeleteModal(false)}
