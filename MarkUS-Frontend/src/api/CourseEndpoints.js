@@ -1,7 +1,11 @@
-import { get } from './helpers/ApiRequestsHelper'
+import { get, post } from './helpers/ApiRequestsHelper'
 
 function getDetail (id) {
   return get(`courses/${id}`)
 }
 
-export { getDetail }
+function create (data) {
+  return post('courses', data)
+}
+
+export { getDetail, create }
