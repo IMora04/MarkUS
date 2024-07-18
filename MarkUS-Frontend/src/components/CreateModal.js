@@ -3,7 +3,7 @@ import { Modal, Pressable, StyleSheet, View } from 'react-native'
 import { BlurView } from 'expo-blur'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
-export default function CreateStudiesModal (props) {
+export default function CreateModal (props) {
   return (
     <>
       {
