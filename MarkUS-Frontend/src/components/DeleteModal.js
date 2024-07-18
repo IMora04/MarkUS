@@ -60,7 +60,7 @@ export default function DeleteModal (props) {
               <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
               <MaterialCommunityIcons name='delete' color={'white'} size={20}/>
               <Text style={[styles.text, { color: 'white' }]}>
-                  Confirm deletion
+                  Confirm
               </Text>
               </View>
             </Pressable>
