@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as ExpoImagePicker from 'expo-image-picker'
 import StudiesCard from '../components/StudiesCard'
 import DeleteModal from '../components/DeleteModal'
+import DoubleButtons from '../components/DoubleButtons'
 
 export default function StudiesScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
@@ -174,32 +175,19 @@ export default function StudiesScreen ({ navigation, route }) {
 
   const renderHomeButtons = () => {
     return (
-      <View style={{ flexDirection: 'row', justifyContent: dimensions.window.width > 450 ? 'flex-end' : 'space-around' }}>
-        {
-          !editing &&
-          <Pressable
-            style={[styles.homeButton, { backgroundColor: 'green' }]}
-            onPress={() => { setShowCreateModal(true) }}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <MaterialCommunityIcons name='plus' color={'white'} size={20}/>
-              <Text style={{ margin: 5, color: 'white' }}>Add studies</Text>
-            </View>
-          </Pressable>
-        }
-        <Pressable
-          style={[styles.homeButton, { backgroundColor: editing ? 'red' : 'blue' }]}
-          onPress={() => {
-            setInitialValues({ name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null })
-            setEditingId(editingId === null ? 0 : null)
-          }}
-          >
-          <View style={{ flexDirection: 'row', alignItems: 'center', width: 120, justifyContent: 'center' }}>
-            <MaterialCommunityIcons name={editing ? 'cancel' : 'pencil'} color={'white'} size={15}/>
-            <Text style={{ margin: 5, color: 'white' }}>{editing ? 'Cancel edition' : 'Edit studies'}</Text>
-          </View>
-        </Pressable>
-      </View>
+      <DoubleButtons
+        width={dimensions.window.width}
+        editing={editing}
+        name='studies'
+        onCreate={() => { setShowCreateModal(true) }}
+        onEdit={() => {
+          setEditingId(0)
+        }}
+        onCancel={() => {
+          setInitialValues({ name: null, credits: null, description: null, logo: null, hasTrimesters: false, years: null })
+          setEditingId(null)
+        }}
+      />
     )
   }
 
@@ -412,10 +400,5 @@ const styles = StyleSheet.create({
     color: 'white',
     alignSelf: 'center',
     marginLeft: 5
-  },
-  homeButton: {
-    padding: 5,
-    borderRadius: 10,
-    marginHorizontal: 5
   }
 })

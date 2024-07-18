@@ -9,12 +9,12 @@ import { useIsFocused } from '@react-navigation/native'
 import { FlatList } from 'react-native-gesture-handler'
 import { ProgressCircle } from 'react-native-svg-charts'
 import DropDownPicker from 'react-native-dropdown-picker'
-import CourseAdder from '../components/CourseAdder'
 import CreateModal from '../components/CreateModal'
 import { Formik } from 'formik'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import InputItem from '../components/InputItem'
 import * as yup from 'yup'
+import AddButton from '../components/AddButton'
 
 export default function StudiesInfoScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
@@ -152,8 +152,9 @@ export default function StudiesInfoScreen ({ navigation, route }) {
       <View style={[styles.coursesCard, { alignItems: 'center' }]}>
         <View style={{ margin: 10 }}>
           <Text style={{ textAlign: 'center' }}>No courses found ({currentStudies.years} expected). Do you want to add a new course to {currentStudies.name}?</Text>
-          <CourseAdder
-            onPress={() => { setShowModal(true) }}
+          <AddButton
+          name='course'
+          onCreate={() => setShowModal(true)}
           />
         </View>
       </View>
@@ -213,12 +214,14 @@ export default function StudiesInfoScreen ({ navigation, route }) {
         />
         {
           currentStudies && currentStudies.courses && currentStudies.courses.length !== 0
-            ? <View style={{ marginTop: 10, alignSelf: 'center', flexDirection: 'row', alignItems: 'center' }}>
+            ? <View style={{ marginTop: 10, alignSelf: 'center', alignItems: 'center' }}>
             <Text>{currentStudies.courses.length}/{currentStudies.years} courses added.</Text>
             {
               (currentStudies.courses.length !== currentStudies.years) &&
-              <CourseAdder
-              onPress={() => { setShowModal(true) }}
+              <AddButton
+              name='course'
+              onCreate={() => setShowModal(true)}
+              style={{ marginTop: 10 }}
               />
             }
           </View>
