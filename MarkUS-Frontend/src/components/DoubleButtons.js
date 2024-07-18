@@ -15,6 +15,7 @@ export default function DoubleButtons (props) {
           />
         }
         <EditCancelButton
+        name={props.name}
         editing={props.editing}
         onCancel={props.onCancel}
         onEdit={props.onEdit}
