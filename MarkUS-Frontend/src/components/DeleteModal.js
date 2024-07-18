@@ -6,7 +6,13 @@ import * as GlobalStyles from '../styles/GlobalStyles'
 
 export default function DeleteModal (props) {
   return (
-    <>
+    <Modal
+    presentationStyle='overFullScreen'
+    animationType='fade'
+    transparent={true}
+    visible={props.isVisible}
+    onRequestClose={props.onCancel}
+    >
       {
         props.isVisible &&
         <BlurView
@@ -16,59 +22,52 @@ export default function DeleteModal (props) {
         experimentalBlurMethod='dimezisBlurView'
         />
       }
-      <Modal
-      presentationStyle='overFullScreen'
-      animationType='fade'
-      transparent={true}
-      visible={props.isVisible}
-      onRequestClose={props.onCancel}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={{ marginVertical: 10 }}>
-              <Text style={styles.text}>Are you sure you want to delete these studies?</Text>
-              <Text style={styles.text}>All courses, subjects and marks will be deleted as well.</Text>
-            </View>
-
-            <Pressable
-              onPress={props.onCancel}
-              style={({ pressed }) => [
-                {
-                  backgroundColor: pressed
-                    ? GlobalStyles.brandSuccessTap
-                    : GlobalStyles.brandSuccess
-                },
-                styles.actionButton]}
-            >
-              <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-              <MaterialCommunityIcons name='content-save' color={'white'} size={20}/>
-              <Text style={[styles.text, { color: 'white' }]}>
-                  Cancel
-              </Text>
-              </View>
-            </Pressable>
-
-            <Pressable
-              onPress={props.onConfirm}
-              style={({ pressed }) => [
-                {
-                  backgroundColor: pressed
-                    ? GlobalStyles.brandPrimaryTap
-                    : GlobalStyles.brandPrimary
-                },
-                styles.actionButton]}
-            >
-              <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-              <MaterialCommunityIcons name='delete' color={'white'} size={20}/>
-              <Text style={[styles.text, { color: 'white' }]}>
-                  Confirm
-              </Text>
-              </View>
-            </Pressable>
-
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <View style={{ marginVertical: 10 }}>
+            <Text style={styles.text}>Are you sure you want to delete these studies?</Text>
+            <Text style={styles.text}>All courses, subjects and marks will be deleted as well.</Text>
           </View>
+
+          <Pressable
+            onPress={props.onCancel}
+            style={({ pressed }) => [
+              {
+                backgroundColor: pressed
+                  ? GlobalStyles.brandSuccessTap
+                  : GlobalStyles.brandSuccess
+              },
+              styles.actionButton]}
+          >
+            <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+            <MaterialCommunityIcons name='content-save' color={'white'} size={20}/>
+            <Text style={[styles.text, { color: 'white' }]}>
+                Cancel
+            </Text>
+            </View>
+          </Pressable>
+
+          <Pressable
+            onPress={props.onConfirm}
+            style={({ pressed }) => [
+              {
+                backgroundColor: pressed
+                  ? GlobalStyles.brandPrimaryTap
+                  : GlobalStyles.brandPrimary
+              },
+              styles.actionButton]}
+          >
+            <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+            <MaterialCommunityIcons name='delete' color={'white'} size={20}/>
+            <Text style={[styles.text, { color: 'white' }]}>
+                Confirm
+            </Text>
+            </View>
+          </Pressable>
+
         </View>
-      </Modal>
-    </>
+      </View>
+    </Modal>
   )
 }
 
