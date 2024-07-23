@@ -155,10 +155,12 @@ export default function StudiesInfoScreen ({ navigation, route }) {
           <Text style={{ textAlign: 'center' }}>No courses found ({currentStudies.years} expected). Do you want to add a new course to {currentStudies.name}?</Text>
         </View>
       </View>
-      <AddButton
-      name='course'
-      onCreate={() => setShowModal(true)}
-      />
+      <View style={{ marginTop: 10, alignSelf: 'center', alignItems: 'center' }}>
+        <AddButton
+        name='course'
+        onCreate={() => setShowModal(true)}
+        />
+      </View>
       </>
     )
   }
