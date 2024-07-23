@@ -284,14 +284,14 @@ export default function StudiesInfoScreen ({ navigation, route }) {
           <View style={{ marginLeft: dimensions.window.width > 450 ? 50 : 0, marginTop: dimensions.window.width > 450 ? 0 : 10, alignSelf: dimensions.window.width < 450 ? 'flex-start' : 'center' }}>
             <Text>
               TOP 5 SCORES:
-              {
-                stats.topSubjects
-                  ? stats.topSubjects.map((s) =>
-                  <Text key={s}>{'\n\t'} · {s}</Text>
-                  )
-                  : <Text> No subjects found</Text>
-              }
             </Text>
+            {
+              stats.topSubjects
+                ? stats.topSubjects.map((s) =>
+                <Text style={{ margin: -5 }} key={s}>{'\n\t'} · {s}</Text>
+                )
+                : <Text> No subjects found</Text>
+            }
           </View>
 
         </View>
