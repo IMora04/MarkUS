@@ -10,7 +10,7 @@ export default function EditCancelButton (props) {
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', width: 120, justifyContent: 'center' }}>
         <MaterialCommunityIcons name={props.editing ? 'cancel' : 'pencil'} color={'white'} size={15}/>
-        <Text style={{ margin: 5, color: 'white' }}>{props.editing ? 'Cancel edition' : 'Edit ' + props.name}</Text>
+        <Text style={{ margin: 5, color: 'white' }}>{props.editing ? 'Stop editing' : 'Edit ' + props.name}</Text>
       </View>
     </Pressable>
   )
