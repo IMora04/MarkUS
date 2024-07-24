@@ -10,6 +10,8 @@ import * as yup from 'yup'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import InputItem from '../components/InputItem'
 import { create } from '../api/SubjectEndpoints'
+import AddButton from '../components/AddButton'
+import TopSubjects from '../components/TopSubjects'
 
 export default function CourseInfoScreen ({ navigation, route }) {
   const [currentCourse, setCurrentCourse] = useState({})
@@ -19,6 +21,10 @@ export default function CourseInfoScreen ({ navigation, route }) {
 
   const initialValues = { name: null, shortName: null, isAnual: false, secondSemester: false, credits: null }
   const studiesName = route.params.currentStudies
+  const topSubjects = currentCourse.subjects?.sort(
+    function (a, b) {
+      return a.officialMark - b.officialMark
+    }).slice(-5).map((s) => s.name + ': ' + (s.officialMark || 0) + ' (' + s.credits + ' credits)')
 
   const validationSchema = yup.object().shape({
     name: yup
@@ -87,7 +93,7 @@ export default function CourseInfoScreen ({ navigation, route }) {
       onPress={() => { navigation.navigate('Subject info', { id: item.id, currentCourse }) }}
     >
       <Text style={{ textAlign: 'center', padding: 10 }}>
-        {dimensions.window.width > 450 ? item.name : item.shortName}: {item.officialMark ? item.officialMark : (item.avgMark ? item.avgMark : 'No marks yet') }
+        {dimensions.window.width > 450 ? item.name : item.shortName}: {item.officialMark ? item.officialMark + ' (official)' : (item.avgMark ? item.avgMark : 'No mark yet') }
       </Text>
     </Pressable>
     )
@@ -112,6 +118,29 @@ export default function CourseInfoScreen ({ navigation, route }) {
     }
   }
 
+  const renderHeader = () => {
+    return (
+      <View style={{ flexDirection: 'row' }}>
+        <Text style={[styles.box, { fontWeight: '500' }]}>
+        1st Semester ({currentCourse.credits / 2} credits)
+        </Text>
+        <Text style={[styles.box, { fontWeight: '500' }]}>
+        2nd Semester ({currentCourse.credits / 2} credits)
+        </Text>
+      </View>
+    )
+  }
+
+  const renderEmptySubjects = () => {
+    return (
+      <View style={[styles.coursesCard, { alignItems: 'center' }]}>
+        <View style={{ margin: 10 }}>
+          <Text style={{ textAlign: 'center' }}>No courses found. Do you want to add a new course to {studiesName}?</Text>
+        </View>
+      </View>
+    )
+  }
+
   return (
     loading
       ? <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
@@ -122,43 +151,52 @@ export default function CourseInfoScreen ({ navigation, route }) {
         <Text>{studiesName} - {courseMapper[currentCourse.number]} course</Text>
       </View>
 
-      <View style={{ flexDirection: 'row' }}>
-        <Text style={[styles.box, { fontWeight: '500' }]}>
-        1st Semester ({currentCourse.credits / 2} credits)
-        </Text>
-        <Text style={[styles.box, { fontWeight: '500' }]}>
-        2nd Semester ({currentCourse.credits / 2} credits)
-        </Text>
+      {
+        (currentCourse.subjects && currentCourse.subjects.length !== 0)
+          ? <>
+        <FlatList
+        data={currentCourse.subjects.filter((s) => s.isAnual)}
+        renderItem={renderSubject}
+        scrollEnabled={false}
+        keyExtractor={item => item.id.toString()}
+        ListHeaderComponent={renderHeader}
+        />
+        <View style={{ flexDirection: 'row' }}>
+          <FlatList
+          style={{ flex: 1 }}
+          data={currentCourse.subjects.filter((s) => !s.secondSemester && !s.isAnual)}
+          renderItem={renderSubject}
+          scrollEnabled={false}
+          keyExtractor={item => item.id.toString()}
+          />
+          <FlatList
+          style={{ flex: 1 }}
+          data={currentCourse.subjects.filter((s) => s.secondSemester && !s.isAnual)}
+          renderItem={renderSubject}
+          scrollEnabled={false}
+          keyExtractor={item => item.id.toString()}
+          />
+        </View>
+        </>
+          : <>
+          {
+            renderEmptySubjects()
+          }
+        </>
+      }
+      <View style={{ marginTop: 10, alignSelf: 'center', alignItems: 'center' }}>
+        {
+          <AddButton
+          name='subject'
+          onCreate={() => setShowModal(true)}
+          />
+        }
       </View>
-      <FlatList
-      data={currentCourse.subjects?.filter((s) => s.isAnual)}
-      renderItem={renderSubject}
-      keyExtractor={item => item.id.toString()}
+      <TopSubjects
+        width={dimensions.window.width}
+        topSubjects={topSubjects}
+        style={{ alignSelf: 'flex-start', marginTop: 10, marginLeft: 0 }}
       />
-      <View style={{ flexDirection: 'row' }}>
-      <FlatList
-      style={{ flex: 1 }}
-      data={currentCourse.subjects?.filter((s) => !s.secondSemester && !s.isAnual)}
-      renderItem={renderSubject}
-      keyExtractor={item => item.id.toString()}
-      />
-      <FlatList
-      style={{ flex: 1 }}
-      data={currentCourse.subjects?.filter((s) => s.secondSemester && !s.isAnual)}
-      renderItem={renderSubject}
-      keyExtractor={item => item.id.toString()}
-      />
-      </View>
-      <Pressable
-        style={{ padding: 10, alignSelf: 'center', backgroundColor: 'blue', margin: 10, borderRadius: 15 }}
-        onPress={() => {
-          setShowModal(true)
-        }}
-      >
-        <Text style={{ fontWeight: 500, color: 'white' }}>
-          Add subject
-        </Text>
-      </Pressable>
       <CreateStudiesModal
         isVisible={showModal}
         onCancel={() => setShowModal(false)}
@@ -289,5 +327,6 @@ const styles = StyleSheet.create({
     color: 'white',
     alignSelf: 'center',
     marginLeft: 5
-  }
+  },
+  coursesCard: { backgroundColor: 'white', marginVertical: 5, borderRadius: 15 }
 })

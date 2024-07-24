@@ -15,6 +15,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import InputItem from '../components/InputItem'
 import * as yup from 'yup'
 import AddButton from '../components/AddButton'
+import TopSubjects from '../components/TopSubjects'
 
 export default function StudiesInfoScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
@@ -281,19 +282,10 @@ export default function StudiesInfoScreen ({ navigation, route }) {
               </Text>
             </View>
           </View>
-          <View style={{ marginLeft: dimensions.window.width > 450 ? 50 : 0, marginTop: dimensions.window.width > 450 ? 0 : 10, alignSelf: dimensions.window.width < 450 ? 'flex-start' : 'center' }}>
-            <Text>
-              TOP 5 SCORES:
-            </Text>
-            {
-              stats.topSubjects
-                ? stats.topSubjects.map((s) =>
-                <Text style={{ margin: -5 }} key={s}>{'\n\t'} · {s}</Text>
-                )
-                : <Text> No subjects found</Text>
-            }
-          </View>
-
+          <TopSubjects
+            width={dimensions.window.width}
+            topSubjects={stats.topSubjects}
+          />
         </View>
         {
           renderCourses()
