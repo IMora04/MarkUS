@@ -20,7 +20,7 @@ export default function StudiesCard (props) {
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
-            <Text style={{ fontWeight: 630 }}>{props.item.name}</Text>
+            <Text style={{ fontWeight: 600 }}>{props.item.name}</Text>
             <Text>{props.item.credits} credits</Text>
             <Text>Currently {props.item.status}</Text>
           </View>
