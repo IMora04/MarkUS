@@ -8,7 +8,7 @@ const loadModel = (sequelize, DataTypes) => {
      */
     static associate (models) {
       // define association here
-      EvaluableType.hasMany(models.Evaluable, { foreignKey: 'evaluableTypeId' })
+      EvaluableType.hasMany(models.Evaluable, { foreignKey: 'evaluableTypeId', as: 'type' })
       EvaluableType.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
     }
   }

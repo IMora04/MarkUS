@@ -9,7 +9,7 @@ const loadModel = (sequelize, DataTypes) => {
     static associate (models) {
       Evaluable.belongsTo(models.Studies, { foreignKey: 'subjectId', as: 'subject' })
       Evaluable.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
-      Evaluable.hasOne(models.EvaluableType, { foreignKey: 'evaluableTypeId', as: 'type' })
+      Evaluable.belongsTo(models.EvaluableType, { foreignKey: 'evaluableTypeId', as: 'type' })
     }
 
   }

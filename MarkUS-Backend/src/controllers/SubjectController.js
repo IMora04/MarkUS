@@ -1,4 +1,4 @@
-import { Subject } from '../models/models.js'
+import { Evaluable, EvaluableType, Subject } from '../models/models.js'
 
 const create = async (req, res) => {
   try {
@@ -10,6 +10,26 @@ const create = async (req, res) => {
     res.status(500).send(err)
   }
 } 
+
+const show = async (req, res) => {
+  try {
+    const subject = await Subject.findByPk(req.params.subjectId, {
+      include: {
+        model: Evaluable,
+        as: 'evaluables',
+        include: {
+          model: EvaluableType,
+          as: 'type'
+        } 
+      }
+    }
+  )
+    res.json(subject)
+  } catch (err) {
+    console.log(err)
+    res.status(500).send(err)
+  }
+}
 
 const _register = async (req, res, userType) => {
   try {
@@ -28,7 +48,8 @@ const _register = async (req, res, userType) => {
 }
   
 const SubjectController = {
-  create
+  create,
+  show
 }
 export default SubjectController
   

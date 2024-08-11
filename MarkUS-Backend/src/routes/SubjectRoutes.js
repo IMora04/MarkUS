@@ -13,6 +13,14 @@ const loadFileRoutes = function (app) {
       isLoggedIn,
       SubjectController.create
     )
+
+  app.route('/subjects/:subjectId')
+    .get(
+      isLoggedIn,
+      checkEntityExists(Subject, 'subjectId'),
+      //SubjectMiddleware.checkSubjectOwnership,
+      SubjectController.show
+    )
 }
 
 export default loadFileRoutes
