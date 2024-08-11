@@ -1,6 +1,7 @@
 import React from 'react'
 import { Pressable, View, Text, StyleSheet } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import * as GlobalStyles from '../styles/GlobalStyles'
 
 export default function StudiesCard (props) {
   return (
@@ -8,7 +9,7 @@ export default function StudiesCard (props) {
       {
         props.editing &&
         <Pressable
-          style={{ backgroundColor: 'red', borderRadius: 15, height: 30, width: 30, alignItems: 'center', justifyContent: 'center', marginLeft: 5, flexGrow: 0 }}
+          style={{ backgroundColor: GlobalStyles.appRed, borderRadius: 15, height: 30, width: 30, alignItems: 'center', justifyContent: 'center', marginLeft: 5, flexGrow: 0 }}
           onPress={props.onDelete}
         >
           <MaterialCommunityIcons name='delete-outline' color={'white'} size={20}/>
@@ -20,15 +21,15 @@ export default function StudiesCard (props) {
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
-            <Text style={{ fontWeight: 600 }}>{props.item.name}</Text>
-            <Text>{props.item.credits} credits</Text>
-            <Text>Currently {props.item.status}</Text>
+            <Text style={{ fontWeight: 600, fontSize: 16 }}>{props.item.name}</Text>
+            <Text style={{ fontSize: 15 }}>{props.item.credits} credits</Text>
+            <Text style={{ fontSize: 15 }}>Currently {props.item.status}</Text>
           </View>
           {
             props.editing &&
             <View style={{ flexDirection: 'row', width: 55 }}>
-              <Text style={{ marginHorizontal: 5, color: 'blue' }}>Edit</Text>
-              <MaterialCommunityIcons name='arrow-right' color={'blue'} size={20}/>
+              <Text style={{ marginHorizontal: 5, color: GlobalStyles.appBlue }}>Edit</Text>
+              <MaterialCommunityIcons name='arrow-right' color={GlobalStyles.appBlue} size={20}/>
             </View>
           }
         </View>

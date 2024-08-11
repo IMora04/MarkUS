@@ -8,7 +8,6 @@ import * as GlobalStyles from '../styles/GlobalStyles'
 import { useIsFocused } from '@react-navigation/native'
 import { FlatList } from 'react-native-gesture-handler'
 import { ProgressCircle } from 'react-native-svg-charts'
-import DropDownPicker from 'react-native-dropdown-picker'
 import CreateModal from '../components/CreateModal'
 import { Formik } from 'formik'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
@@ -16,6 +15,8 @@ import InputItem from '../components/InputItem'
 import * as yup from 'yup'
 import AddButton from '../components/AddButton'
 import TopSubjects from '../components/TopSubjects'
+import RNPickerSelect from 'react-native-picker-select'
+import { PieChart } from 'react-native-gifted-charts'
 
 export default function StudiesInfoScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
@@ -25,6 +26,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
   const [loading, setLoading] = useState(true)
   const [backendErrors, setBackendErrors] = useState()
   const [showModal, setShowModal] = useState(false)
+  const [selectedLanguage, setSelectedLanguage] = useState()
 
   const initialValues = { credits: null, number: null }
   const validationSchema = yup.object().shape({
@@ -132,7 +134,13 @@ export default function StudiesInfoScreen ({ navigation, route }) {
       ? stats.subjects?.sort(
         function (a, b) {
           return a.officialMark - b.officialMark
-        }).slice(-5).map((s) => s.name + ': ' + (s.officialMark || 0) + ' (' + s.credits + ' credits)')
+        }).slice(-5).map((s) => {
+        return ({
+          label: s.shortName,
+          value: s.officialMark || 0,
+          credits: s.credits
+        })
+      })
       : null
   }
 
@@ -168,30 +176,55 @@ export default function StudiesInfoScreen ({ navigation, route }) {
 
   const renderStudiesSelector = () => {
     return (
-      <>
-        <DropDownPicker
-          open={open}
-          value={currentStudies.id}
+      <View>
+        <RNPickerSelect
+          onValueChange={(value) => fetchOneStudies(value)}
           items={studiesNames}
-          setOpen={setOpen}
-          onSelectItem={ item => {
-            fetchOneStudies(item.value)
-          }}
-          listMode={'SCROLLVIEW'}
-          setItems={setStudiesNames}
-          placeholder="Select studies"
-          style={{ backgroundColor: GlobalStyles.brandBackground }}
-          dropDownStyle={{ backgroundColor: '#fafafa' }}
+          placeholder={{}}
+          value={currentStudies.id}
+          style={pickerSelectStyles}
         />
-      </>
+      </View>
+    )
+  }
+
+  const renderDashboard = () => {
+    return (
+      currentStudies.courses?.flatMap(c => c.subjects).length === 0
+        ? <View style={{ flexDirection: dimensions.window.width > 450 ? 'row' : 'column', marginTop: 20, alignItems: 'center', backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+      <Text>Start adding subjects to see stats of your studies</Text>
+        </View>
+        : <View style={{ flexDirection: dimensions.window.width > 450 ? 'row' : 'column', marginTop: 20, alignItems: 'center', backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {
+            renderProgressCircle()
+          }
+          <Text>
+          </Text>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 18 }}>
+              Average mark (overall): {stats.officialAvg}
+            </Text>
+            <Text style={{ fontSize: 18 }}>
+              Average mark (taken): {stats.officialTakenAvg}
+            </Text>
+            <Text>
+            </Text>
+          </View>
+        </View>
+        <TopSubjects
+          width={dimensions.window.width}
+          topSubjects={stats.topSubjects}
+        />
+      </View>
     )
   }
 
   const renderProgressCircle = () => {
     return (
-      <View style={{ minHeight: 100, minWidth: 100, justifyContent: 'center', marginRight: 20 }}>
+      <View style={{ minHeight: 100, minWidth: 100, justifyContent: 'center', marginRight: 20, marginVertical: 10 }}>
         <View style={{ position: 'absolute', alignSelf: 'center', height: 100, width: 80, justifyContent: 'center' }}>
-          <Text style={{ textAlign: 'center' }}>{stats.completion * 100}% completed</Text>
+          <Text style={{ textAlign: 'center', fontSize: 20 }}>{stats.completion * 100}%</Text>
         </View>
         <ProgressCircle style={{ minHeight: 100, minWidth: 100 }} progress={stats.completion || 0} progressColor={GlobalStyles.appPurple} strokeWidth={8}/>
       </View>
@@ -265,28 +298,9 @@ export default function StudiesInfoScreen ({ navigation, route }) {
         {
           renderStudiesSelector()
         }
-        <View style={{ flexDirection: dimensions.window.width > 450 ? 'row' : 'column', marginTop: 20, alignItems: 'center' }}>
-
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {
-              renderProgressCircle()
-            }
-            <View style={{ flex: 1 }}>
-              <Text>
-                STUDIES AVERAGE MARK (OVERALL): {stats.officialAvg}
-              </Text>
-              <Text>
-                STUDIES AVERAGE MARK (TAKEN): {stats.officialTakenAvg}
-              </Text>
-              <Text>
-              </Text>
-            </View>
-          </View>
-          <TopSubjects
-            width={dimensions.window.width}
-            topSubjects={stats.topSubjects}
-          />
-        </View>
+        {
+          renderDashboard()
+        }
         {
           renderCourses()
         }
@@ -372,7 +386,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  coursesCard: { backgroundColor: 'white', marginVertical: 5, borderRadius: 15 },
+  coursesCard: { backgroundColor: 'white', marginVertical: 5, borderRadius: 10 },
   actionButton: {
     borderRadius: 8,
     height: 40,
@@ -387,5 +401,39 @@ const styles = StyleSheet.create({
     color: 'white',
     alignSelf: 'center',
     marginLeft: 5
+  }
+})
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    backgroundColor: 'white',
+    paddingRight: 30
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30
+  },
+  inputWeb: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30
   }
 })

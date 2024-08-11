@@ -196,17 +196,13 @@ export default function StudiesScreen ({ navigation, route }) {
       ? <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
         <ActivityIndicator />
       </View>
-      : <View style={{ margin: 20 }}>
+      : <View style={{ margin: 20, marginTop: 10 }}>
       {
         loggedInUser
           ? <>
-            <Text style={{ height: 20 }}>
-              Your studies:
-            </Text>
-
             {
               dimensions.window.width > 450 &&
-              <View style={{ marginTop: -30, height: 40 }}>
+              <View style={{ height: 40 }}>
                 {
                   renderHomeButtons()
                 }

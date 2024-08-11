@@ -1,16 +1,17 @@
 import React from 'react'
 import { Pressable, StyleSheet, View, Text } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import * as GlobalStyles from '../styles/GlobalStyles'
 
 export default function AddButton (props) {
   return (
     <Pressable
-        style={[styles.homeButton, { backgroundColor: 'green' }, props.style]}
+        style={[styles.homeButton, { backgroundColor: GlobalStyles.appGreen }, props.style]}
         onPress={props.onCreate}
     >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <MaterialCommunityIcons name='plus' color={'white'} size={20}/>
-        <Text style={{ margin: 5, color: 'white' }}>Add {props.name}</Text>
+        <Text style={{ margin: 5, color: 'white', fontSize: 15 }}>Add {props.name}</Text>
         </View>
     </Pressable>
   )
