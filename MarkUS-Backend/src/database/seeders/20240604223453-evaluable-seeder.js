@@ -14,8 +14,8 @@ module.exports = {
     */
     await queryInterface.bulkInsert('Evaluables',
     [
-      { evaluableTypeId: 1, subjectId: 1, userId: 1, mark: 8.6, weight: 20 },
-      { evaluableTypeId: 2, subjectId: 2, userId: 1, mark: 4.2, weight: 60 }
+      { evaluableTypeId: 1, subjectId: 1, userId: 1, mark: 8.6, weight: 20, name: 'First Partial' },
+      { evaluableTypeId: 2, subjectId: 2, userId: 1, mark: 4.2, weight: 60, name: 'First Partial' }
 
     ], {})
 

@@ -18,6 +18,10 @@ module.exports = {
         },
         onDelete: 'cascade'
       },    
+      name: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       subjectId: {
         allowNull: false,
         type: Sequelize.INTEGER,
@@ -40,7 +44,10 @@ module.exports = {
         },
         onDelete: 'cascade'
       },
-      mark: Sequelize.DOUBLE,
+      mark: {
+        type: Sequelize.DOUBLE,
+        allowNull: true
+      },
       weight: Sequelize.INTEGER,  
         createdAt: {
         allowNull: false,

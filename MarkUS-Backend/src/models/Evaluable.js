@@ -17,7 +17,11 @@ const loadModel = (sequelize, DataTypes) => {
     evaluableTypeId: {
       allowNull: false,
       type: DataTypes.INTEGER
-    },    
+    },
+    name: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
     subjectId: {
       allowNull: false,
       type: DataTypes.INTEGER
@@ -26,7 +30,10 @@ const loadModel = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.INTEGER
     },
-    mark: DataTypes.DOUBLE,
+    mark: {
+      type: DataTypes.DOUBLE,
+      allowNull: true
+    },
     weight: DataTypes.INTEGER,  
     createdAt: {
       allowNull: false,
