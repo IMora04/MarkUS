@@ -46,15 +46,35 @@ export default function CourseInfoScreen ({ navigation, route }) {
     }
   }
 
+  const evaluableTypes = currentSubject.evaluables
+    ? [...new Set(currentSubject.evaluables?.map(e => e.type.name))]
+    : []
+
   useEffect(() => {
     setLoading(true)
     fetchOneSubject(route.params.id)
     setLoading(false)
   }, [route])
 
-  const renderSubject = ({ item }) => {
+  const renderCategories = ({ item }) => {
     return (
-        <></>
+      <View>
+        <Text style={{ fontSize: 18, marginVertical: 10 }}>{item}s</Text>
+        <FlatList
+        data={currentSubject.evaluables.filter(e => e.type.name === item)}
+        keyExtractor={e => e.id}
+        renderItem={renderCategory}
+        scrollEnabled={false}
+        />
+      </View>
+    )
+  }
+
+  const renderCategory = ({ item }) => {
+    return (
+      <Text style={{ margin: 2 }}>
+        {item.name}: {item.mark ? item.mark : 'No mark yet'} ({item.weight}%)
+      </Text>
     )
   }
 
@@ -63,16 +83,16 @@ export default function CourseInfoScreen ({ navigation, route }) {
       ? <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
       <ActivityIndicator/>
     </View>
-      : <ScrollView style={{ padding: 20 }}>
-      <Text style={{ textAlign: 'center', fontWeight: 600, fontSize: 20 }}>
+      : <View style={{ padding: 20 }}>
+      <Text style={{ textAlign: 'center', fontWeight: 600, fontSize: 20, marginBottom: 15 }}>
         {currentSubject.name}
       </Text>
-      <Text>
-        {
-            JSON.stringify(currentSubject, null, '\t')
-        }
-      </Text>
-    </ScrollView>
+      <FlatList
+      scrollEnabled={false}
+      data={evaluableTypes}
+      renderItem={renderCategories}
+      />
+    </View>
   )
 }
 
