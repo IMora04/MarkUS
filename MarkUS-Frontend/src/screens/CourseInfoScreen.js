@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { Text, StyleSheet, Dimensions, View, Pressable, Switch, ActivityIndicator } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import * as GlobalStyles from '../styles/GlobalStyles'
@@ -12,19 +12,27 @@ import InputItem from '../components/InputItem'
 import { create } from '../api/SubjectEndpoints'
 import AddButton from '../components/AddButton'
 import TopSubjects from '../components/TopSubjects'
+import { AuthorizationContext } from '../context/AuthorizationContext'
 
 export default function CourseInfoScreen ({ navigation, route }) {
   const [currentCourse, setCurrentCourse] = useState({})
   const [showModal, setShowModal] = useState(false)
   const [backendErrors, setBackendErrors] = useState()
   const [loading, setLoading] = useState(true)
+  const { loggedInUser } = useContext(AuthorizationContext)
 
   const initialValues = { name: null, shortName: null, isAnual: false, secondSemester: false, credits: null }
   const studiesName = route.params.currentStudies
   const topSubjects = currentCourse.subjects?.sort(
     function (a, b) {
       return a.officialMark - b.officialMark
-    }).slice(-5).map((s) => s.name + ': ' + (s.officialMark || 0) + ' (' + s.credits + ' credits)')
+    }).slice(-5).map((s) => {
+    return ({
+      label: s.shortName,
+      value: s.officialMark || 0,
+      credits: s.credits
+    })
+  })
 
   const validationSchema = yup.object().shape({
     name: yup
@@ -55,6 +63,12 @@ export default function CourseInfoScreen ({ navigation, route }) {
     window: windowDimensions,
     screen: screenDimensions
   })
+
+  useEffect(() => {
+    if (!loggedInUser) {
+      navigation.navigate('My studies')
+    }
+  }, [loggedInUser])
 
   async function fetchCourse (id) {
     try {
@@ -184,6 +198,7 @@ export default function CourseInfoScreen ({ navigation, route }) {
           }
         </>
       }
+
       <View style={{ marginTop: 10, alignSelf: 'center', alignItems: 'center' }}>
         {
           <AddButton
@@ -192,11 +207,21 @@ export default function CourseInfoScreen ({ navigation, route }) {
           />
         }
       </View>
-      <TopSubjects
-        width={dimensions.window.width}
-        topSubjects={topSubjects}
-        style={{ alignSelf: 'flex-start', marginTop: 10, marginLeft: 0 }}
-      />
+
+      {
+        currentCourse.subjects && currentCourse.subjects.length !== 0
+          ? <TopSubjects
+            width={dimensions.window.width}
+            topSubjects={topSubjects}
+            style={{ alignSelf: 'flex-start', marginTop: 10, marginLeft: 0 }}
+          />
+          : <View style={{ marginVertical: 20 }}>
+            <Text style={{ textAlign: 'center' }}>
+              Start adding subjects to see the top 5 subjects
+            </Text>
+          </View>
+      }
+
       <CreateStudiesModal
         isVisible={showModal}
         onCancel={() => setShowModal(false)}

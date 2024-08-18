@@ -16,17 +16,14 @@ import * as yup from 'yup'
 import AddButton from '../components/AddButton'
 import TopSubjects from '../components/TopSubjects'
 import RNPickerSelect from 'react-native-picker-select'
-import { PieChart } from 'react-native-gifted-charts'
 
 export default function StudiesInfoScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
-  const [open, setOpen] = useState(false)
   const [currentStudies, setCurrentStudies] = useState({})
   const [studiesNames, setStudiesNames] = useState([])
   const [loading, setLoading] = useState(true)
   const [backendErrors, setBackendErrors] = useState()
   const [showModal, setShowModal] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState()
 
   const initialValues = { credits: null, number: null }
   const validationSchema = yup.object().shape({
@@ -91,6 +88,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
       }
       if (!loggedInUser) {
         setStudiesNames([])
+        navigation.navigate('My studies')
         return
       }
       try {
@@ -98,7 +96,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
         const fetchedStudiesReshaped = fetchedStudies.map((e) => {
           return {
             label: e.name,
-            value: e.id
+            value: e.id.toString()
           }
         })
         setStudiesNames(fetchedStudiesReshaped)
@@ -126,10 +124,10 @@ export default function StudiesInfoScreen ({ navigation, route }) {
 
   stats = {
     ...stats,
-    provisionalAvg: (stats.subjects?.reduce((acc, cv) => acc + cv.credits * cv.avgMark, 0)) / (stats.subjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0,
-    officialAvg: (stats.subjects?.reduce((acc, cv) => acc + cv.credits * cv.officialMark, 0)) / (stats.subjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0,
-    provisionalTakenAvg: (stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits * cv.avgMark, 0)) / (stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0,
-    officialTakenAvg: (stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits * cv.officialMark, 0)) / (stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0,
+    provisionalAvg: ((stats.subjects?.reduce((acc, cv) => acc + cv.credits * cv.avgMark, 0)) / (stats.subjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0).toFixed(3),
+    officialAvg: ((stats.subjects?.reduce((acc, cv) => acc + cv.credits * cv.officialMark, 0)) / (stats.subjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0).toFixed(3),
+    provisionalTakenAvg: ((stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits * cv.avgMark, 0)) / (stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0).toFixed(3),
+    officialTakenAvg: ((stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits * cv.officialMark, 0)) / (stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits, 0)) || 0).toFixed(3),
     topSubjects: (stats.subjects?.length !== 0)
       ? stats.subjects?.sort(
         function (a, b) {
@@ -190,32 +188,37 @@ export default function StudiesInfoScreen ({ navigation, route }) {
 
   const renderDashboard = () => {
     return (
+      <View style={{ flexDirection: 'column', marginTop: 20, flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
+          <View style={{ backgroundColor: 'white', borderRadius: 10, padding: 20, paddingHorizontal: '10%', width: dimensions.window.width < 450 ? '100%' : null }}>
+      {
       currentStudies.courses?.flatMap(c => c.subjects).length === 0
-        ? <View style={{ flexDirection: dimensions.window.width > 450 ? 'row' : 'column', marginTop: 20, alignItems: 'center', backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-      <Text>Start adding subjects to see stats of your studies</Text>
+        ? <View style={{ marginHorizontal: '-7%' }}>
+          <Text>Start adding subjects to see stats of your studies</Text>
         </View>
-        : <View style={{ flexDirection: dimensions.window.width > 450 ? 'row' : 'column', marginTop: 20, alignItems: 'center', backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {
-            renderProgressCircle()
-          }
-          <Text>
-          </Text>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 18 }}>
-              Average mark (overall): {stats.officialAvg}
-            </Text>
-            <Text style={{ fontSize: 18 }}>
-              Average mark (taken): {stats.officialTakenAvg}
-            </Text>
-            <Text>
-            </Text>
+        : <>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: '-7%' }}>
+            {
+              renderProgressCircle()
+            }
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 16 }}>
+                Average mark (overall): {stats.officialAvg}
+              </Text>
+              <Text style={{ fontSize: 16 }}>
+                Average mark (taken): {stats.officialTakenAvg}
+              </Text>
+            </View>
           </View>
+          <View>
+            <TopSubjects
+              width={dimensions.window.width}
+              topSubjects={stats.topSubjects}
+              style={{ alignSelf: 'center', marginLeft: '-8%' }}
+            />
+          </View>
+        </>
+        }
         </View>
-        <TopSubjects
-          width={dimensions.window.width}
-          topSubjects={stats.topSubjects}
-        />
       </View>
     )
   }
@@ -226,7 +229,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
         <View style={{ position: 'absolute', alignSelf: 'center', height: 100, width: 80, justifyContent: 'center' }}>
           <Text style={{ textAlign: 'center', fontSize: 20 }}>{stats.completion * 100}%</Text>
         </View>
-        <ProgressCircle style={{ minHeight: 100, minWidth: 100 }} progress={stats.completion || 0} progressColor={GlobalStyles.appPurple} strokeWidth={8}/>
+        <ProgressCircle style={{ minHeight: dimensions.window.width > 450 ? 200 : 100, minWidth: dimensions.window.width > 450 ? 200 : 100 }} progress={stats.completion || 0} progressColor={GlobalStyles.appPurple} strokeWidth={dimensions.window.width > 450 ? 12 : 8}/>
       </View>
     )
   }
@@ -234,39 +237,41 @@ export default function StudiesInfoScreen ({ navigation, route }) {
   const renderCoursesHeader = ({ item }) => {
     return (
       <View style={{ marginBottom: 10 }}>
-        <Text>See individual courses:</Text>
+        <Text style={{ fontSize: 16 }}>See individual courses:</Text>
       </View>
     )
   }
 
   const renderCourses = () => {
     return (
-      <>
-        <FlatList
-        data={currentStudies.courses}
-        renderItem={renderCourse}
-        style={{ flexGrow: 0, marginTop: 20 }}
-        scrollEnabled={false}
-        keyExtractor={item => item.id.toString()}
-        ListEmptyComponent={renderEmptyCourses}
-        ListHeaderComponent={renderCoursesHeader}
-        />
-        {
-          currentStudies && currentStudies.courses && currentStudies.courses.length !== 0
-            ? <View style={{ marginTop: 10, alignSelf: 'center', alignItems: 'center' }}>
-            <Text>{currentStudies.courses.length}/{currentStudies.years} courses added.</Text>
-            {
-              (currentStudies.courses.length !== currentStudies.years) &&
-              <AddButton
-              name='course'
-              onCreate={() => setShowModal(true)}
-              style={{ marginTop: 10 }}
-              />
-            }
-          </View>
-            : <></>
-        }
-      </>
+      <View style={{ flex: 1 }}>
+        <View style={{ paddingHorizontal: '10%' }}>
+          <FlatList
+          data={currentStudies.courses}
+          renderItem={renderCourse}
+          style={{ flexGrow: 0, marginTop: 20 }}
+          scrollEnabled={false}
+          keyExtractor={item => item.id.toString()}
+          ListEmptyComponent={renderEmptyCourses}
+          ListHeaderComponent={renderCoursesHeader}
+          />
+          {
+            currentStudies && currentStudies.courses && currentStudies.courses.length !== 0
+              ? <View style={{ marginTop: 10, alignSelf: 'center', alignItems: 'center' }}>
+              <Text>{currentStudies.courses.length}/{currentStudies.years} courses added.</Text>
+              {
+                (currentStudies.courses.length !== currentStudies.years) &&
+                <AddButton
+                name='course'
+                onCreate={() => setShowModal(true)}
+                style={{ marginTop: 10 }}
+                />
+              }
+            </View>
+              : <></>
+          }
+        </View>
+      </View>
     )
   }
 
@@ -298,12 +303,14 @@ export default function StudiesInfoScreen ({ navigation, route }) {
         {
           renderStudiesSelector()
         }
-        {
-          renderDashboard()
-        }
-        {
-          renderCourses()
-        }
+        <View style={{ flexDirection: dimensions.window.width > 450 ? 'row' : 'column' }}>
+          {
+            renderDashboard()
+          }
+          {
+            renderCourses()
+          }
+        </View>
         <CreateModal
         isVisible={showModal}
         onCancel={() => {
@@ -424,7 +431,8 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: 'purple',
     borderRadius: 8,
     color: 'black',
-    paddingRight: 30
+    paddingRight: 30,
+    backgroundColor: 'white'
   },
   inputWeb: {
     fontSize: 16,

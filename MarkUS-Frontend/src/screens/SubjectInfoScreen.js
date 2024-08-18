@@ -1,15 +1,23 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { Text, StyleSheet, Dimensions, View, Pressable, Switch, ActivityIndicator, ScrollView } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { showMessage } from 'react-native-flash-message'
 import { getDetail } from '../api/SubjectEndpoints'
 import * as yup from 'yup'
+import { AuthorizationContext } from '../context/AuthorizationContext'
 
 export default function CourseInfoScreen ({ navigation, route }) {
   const [backendErrors, setBackendErrors] = useState()
   const [loading, setLoading] = useState(true)
   const [currentSubject, setCurrentSubject] = useState({})
+  const { loggedInUser } = useContext(AuthorizationContext)
+
+  useEffect(() => {
+    if (!loggedInUser) {
+      navigation.navigate('My studies')
+    }
+  }, [loggedInUser])
 
   const validationSchema = yup.object().shape({
   })

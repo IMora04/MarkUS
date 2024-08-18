@@ -78,6 +78,7 @@ export default function StudiesScreen ({ navigation, route }) {
       return
     }
     if (!loggedInUser) {
+      navigation.navigate('My studies')
       setStudies([])
       return
     }
