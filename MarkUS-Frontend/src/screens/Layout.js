@@ -16,6 +16,13 @@ export default function Layout () {
 
   const Tab = createBottomTabNavigator()
 
+  FlashMessage.setColorTheme({
+    success: GlobalStyles.appGreenTap,
+    info: GlobalStyles.appPurpleTap,
+    warning: GlobalStyles.appOrangeTap,
+    danger: GlobalStyles.appRedTap
+  })
+
   const init = async () => {
     await getToken(
       (recoveredUser) => {
