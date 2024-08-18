@@ -5,16 +5,26 @@ import * as GlobalStyles from '../styles/GlobalStyles'
 
 export default function TopSubjects (props) {
   return (
-    <View style={[{ marginLeft: 0, alignSelf: 'center' }, props.style]}>
-      <Text style={{ textAlign: 'center', fontSize: 15, marginBottom: 10 }}>Top 5 subjects</Text>
-      <BarChart
-        frontColor={GlobalStyles.appPurple}
-        barWidth={props.width < 450 ? props.width / 15 : 40}
-        data={props.topSubjects}
-        stepHeight={20}
-        barBorderTopLeftRadius={5}
-        barBorderTopRightRadius={5}
-      />
-    </View>
+    <>
+      {
+        props.topSubjects?.length === 0
+          ? <View style={{ marginTop: 20 }}>
+          <Text style={{ textAlign: 'center' }}>
+          Start adding subjects to see the top 5 subjects
+          </Text>
+        </View>
+          : <View style={[{ marginLeft: 0, alignSelf: 'center' }, props.style]}>
+        <Text style={{ textAlign: 'center', fontSize: 15, marginBottom: 10 }}>Top 5 subjects</Text>
+        <BarChart
+          frontColor={GlobalStyles.appPurple}
+          barWidth={props.width < 450 ? props.width / 15 : 40}
+          data={props.topSubjects}
+          stepHeight={20}
+          barBorderTopLeftRadius={5}
+          barBorderTopRightRadius={5}
+        />
+      </View>
+    }
+    </>
   )
 }

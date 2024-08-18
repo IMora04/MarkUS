@@ -208,19 +208,11 @@ export default function CourseInfoScreen ({ navigation, route }) {
         }
       </View>
 
-      {
-        currentCourse.subjects && currentCourse.subjects.length !== 0
-          ? <TopSubjects
-            width={dimensions.window.width}
-            topSubjects={topSubjects}
-            style={{ alignSelf: 'flex-start', marginTop: 10, marginLeft: 0 }}
-          />
-          : <View style={{ marginVertical: 20 }}>
-            <Text style={{ textAlign: 'center' }}>
-              Start adding subjects to see the top 5 subjects
-            </Text>
-          </View>
-      }
+      <TopSubjects
+        width={dimensions.window.width}
+        topSubjects={topSubjects}
+        style={{ alignSelf: 'flex-start', marginTop: 10, marginLeft: 0 }}
+      />
 
       <CreateStudiesModal
         isVisible={showModal}

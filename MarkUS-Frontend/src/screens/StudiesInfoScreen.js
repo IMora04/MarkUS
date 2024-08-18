@@ -220,11 +220,13 @@ export default function StudiesInfoScreen ({ navigation, route }) {
             </View>
           </View>
           <View>
-            <TopSubjects
-              width={dimensions.window.width}
-              topSubjects={stats.topSubjects}
-              style={{ alignSelf: 'center', marginLeft: '-8%' }}
-            />
+
+          <TopSubjects
+            width={dimensions.window.width}
+            topSubjects={stats.topSubjects}
+            style={{ alignSelf: 'center', marginLeft: '-8%' }}
+          />
+
           </View>
         </>
         }
@@ -237,7 +239,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
     return (
       <View style={{ minHeight: 100, minWidth: 100, justifyContent: 'center', marginRight: 20, marginVertical: 10 }}>
         <View style={{ position: 'absolute', alignSelf: 'center', height: 100, width: 80, justifyContent: 'center' }}>
-          <Text style={{ textAlign: 'center', fontSize: 20 }}>{stats.completion * 100}%</Text>
+          <Text style={{ textAlign: 'center', fontSize: 20 }}>{(stats.completion * 100) || 0}%</Text>
         </View>
         <ProgressCircle style={{ minHeight: dimensions.window.width > 450 ? 200 : 100, minWidth: dimensions.window.width > 450 ? 200 : 100 }} progress={stats.completion || 0} progressColor={GlobalStyles.appPurple} strokeWidth={dimensions.window.width > 450 ? 12 : 8}/>
       </View>
