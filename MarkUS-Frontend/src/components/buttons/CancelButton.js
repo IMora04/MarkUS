@@ -1,6 +1,6 @@
 import React from 'react'
 import { Pressable, StyleSheet, View, Text } from 'react-native'
-import * as GlobalStyles from '../styles/GlobalStyles'
+import * as GlobalStyles from '../../styles/GlobalStyles'
 
 export default function CancelButton (props) {
   return (

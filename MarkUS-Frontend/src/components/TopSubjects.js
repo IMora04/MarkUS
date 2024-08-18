@@ -17,6 +17,7 @@ export default function TopSubjects (props) {
         <Text style={{ textAlign: 'center', fontSize: 15, marginBottom: 10 }}>Top 5 subjects</Text>
         <BarChart
           frontColor={GlobalStyles.appPurple}
+          disableScroll={true}
           barWidth={props.width < 450 ? props.width / 15 : 40}
           data={props.topSubjects}
           stepHeight={20}

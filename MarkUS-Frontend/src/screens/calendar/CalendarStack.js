@@ -1,7 +1,7 @@
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import CalendarScreen from './CalendarScreen'
-import BackIcon from '../components/BackIcon'
+import BackIcon from '../../components/BackIcon'
 
 export default function CalendarStack ({ navigation }) {
   const Stack = createStackNavigator()

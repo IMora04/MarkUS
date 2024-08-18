@@ -5,10 +5,10 @@ import FlashMessage, { showMessage } from 'react-native-flash-message'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { ApiError } from '../api/helpers/Errors'
 import { NavigationContainer } from '@react-navigation/native'
-import MainStack from './MainStack'
+import MainStack from './main/MainStack'
 import AuthStack from './auth/AuthStack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import CalendarStack from './CalendarStack'
+import CalendarStack from './calendar/CalendarStack'
 
 export default function Layout () {
   const { getToken, signOut } = useContext(AuthorizationContext)

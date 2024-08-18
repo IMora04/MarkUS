@@ -5,7 +5,7 @@ import StudiesInfoScreen from './StudiesInfoScreen'
 import CourseInfoScreen from './CourseInfoScreen'
 import SubjectInfoScreen from './SubjectInfoScreen'
 
-import BackIcon from '../components/BackIcon'
+import BackIcon from '../../components/BackIcon'
 
 export default function MainStack ({ navigation }) {
   const Stack = createStackNavigator()

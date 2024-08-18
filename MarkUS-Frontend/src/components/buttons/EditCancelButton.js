@@ -1,7 +1,7 @@
 import React from 'react'
 import { Pressable, StyleSheet, View, Text } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import * as GlobalStyles from '../styles/GlobalStyles'
+import * as GlobalStyles from '../../styles/GlobalStyles'
 
 export default function EditCancelButton (props) {
   return (

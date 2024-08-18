@@ -2,8 +2,8 @@ import React from 'react'
 import { Modal, Pressable, StyleSheet, View, Text } from 'react-native'
 import { BlurView } from 'expo-blur'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import * as GlobalStyles from '../styles/GlobalStyles'
-import CancelButton from './CancelButton'
+import * as GlobalStyles from '../../styles/GlobalStyles'
+import CancelButton from '../buttons/CancelButton'
 
 export default function DeleteModal (props) {
   return (
