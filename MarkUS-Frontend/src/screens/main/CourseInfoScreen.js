@@ -14,6 +14,7 @@ import AddButton from '../../components/buttons/AddButton'
 import TopSubjects from '../../components/TopSubjects'
 import { AuthorizationContext } from '../../context/AuthorizationContext'
 import DeleteModal from '../../components/modals/DeleteModal'
+import CancelButton from '../../components/buttons/CancelButton'
 
 export default function CourseInfoScreen ({ navigation, route }) {
   const [currentCourse, setCurrentCourse] = useState({})
@@ -324,24 +325,6 @@ export default function CourseInfoScreen ({ navigation, route }) {
                 }
 
                 <Pressable
-                  onPress={() => setShowCreateModal(false)}
-                  style={({ pressed }) => [
-                    {
-                      backgroundColor: pressed
-                        ? GlobalStyles.appRedTap
-                        : GlobalStyles.appRed
-                    },
-                    styles.actionButton]}
-                >
-                  <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-                    <MaterialCommunityIcons name='close' color='white' size={20}/>
-                    <Text style={styles.text}>
-                      Cancel
-                    </Text>
-                  </View>
-                </Pressable>
-
-                <Pressable
                   onPress={handleSubmit}
                   style={({ pressed }) => [
                     {
@@ -358,6 +341,10 @@ export default function CourseInfoScreen ({ navigation, route }) {
                     </Text>
                   </View>
                 </Pressable>
+
+                <CancelButton
+                onCancel={() => setShowCreateModal(false)}
+                />
 
                 </>
               )}
