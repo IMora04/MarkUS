@@ -15,6 +15,7 @@ import * as ExpoImagePicker from 'expo-image-picker'
 import StudiesCard from '../components/StudiesCard'
 import DeleteModal from '../components/DeleteModal'
 import DoubleButtons from '../components/DoubleButtons'
+import CancelButton from '../components/CancelButton'
 
 export default function StudiesScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
@@ -315,24 +316,6 @@ export default function StudiesScreen ({ navigation, route }) {
                     </ScrollView>
 
                     <Pressable
-                      onPress={() => setShowCreateModal(false)}
-                      style={({ pressed }) => [
-                        {
-                          backgroundColor: pressed
-                            ? GlobalStyles.appRedTap
-                            : GlobalStyles.appRed
-                        },
-                        styles.actionButton]}
-                    >
-                      <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-                        <MaterialCommunityIcons name='close' color={'white'} size={20}/>
-                        <Text style={styles.text}>
-                          Cancel
-                        </Text>
-                      </View>
-                    </Pressable>
-
-                    <Pressable
                       onPress={editing ? async () => { await updateStudies(values) } : async () => { await createStudies(values) } }
                       style={({ pressed }) => [
                         {
@@ -350,6 +333,10 @@ export default function StudiesScreen ({ navigation, route }) {
                       </View>
                     </Pressable>
 
+                    <CancelButton
+                    onCancel={() => setShowCreateModal(false)}
+                    />
+
                     </>
                   )}
                 </Formik>
@@ -360,6 +347,7 @@ export default function StudiesScreen ({ navigation, route }) {
               isVisible={showDeleteModal}
               onCancel={() => setShowDeleteModal(false)}
               onConfirm={() => removeStudies(editingId)}
+              name={'studies'}
             />
           </>
           : <View style={{ justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%' }}>

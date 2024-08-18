@@ -16,6 +16,7 @@ import * as yup from 'yup'
 import AddButton from '../components/AddButton'
 import TopSubjects from '../components/TopSubjects'
 import RNPickerSelect from 'react-native-picker-select'
+import CancelButton from '../components/CancelButton'
 
 export default function StudiesInfoScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
@@ -66,7 +67,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
     if (Platform.OS === 'ios') {
       fetchOneStudies(route.params.id)
     }
-  }, [route.params.id])
+  }, [route])
 
   async function fetchOneStudies (id) {
     try {
@@ -150,7 +151,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
       <View style={styles.coursesCard}>
         <Pressable
         style={{ margin: 10 }}
-        onPress={() => { navigation.navigate('Course info', { id: item.id, currentStudies: currentStudies.name }) }}>
+        onPress={() => { navigation.navigate('Course info', { id: item.id, currentStudies }) }}>
           <Text>{courseMapper[item.number]} course</Text>
         </Pressable>
       </View>
@@ -293,7 +294,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
       values.studiesId = currentStudies.id
       const createdCourse = await create(values)
       showMessage({
-        message: `Course ${createdCourse.name} succesfully created`,
+        message: `${courseMapper[createdCourse.number]} course succesfully created`,
         type: 'success',
         style: GlobalStyles.flashStyle,
         titleStyle: GlobalStyles.flashTextStyle
@@ -355,27 +356,6 @@ export default function StudiesInfoScreen ({ navigation, route }) {
               }
 
               <Pressable
-                onPress={() => {
-                  setShowModal(false)
-                  setBackendErrors()
-                }}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: pressed
-                      ? GlobalStyles.appRedTap
-                      : GlobalStyles.appRed
-                  },
-                  styles.actionButton]}
-              >
-                <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-                  <MaterialCommunityIcons name='close' color={'white'} size={20}/>
-                  <Text style={styles.text}>
-                    Cancel
-                  </Text>
-                </View>
-              </Pressable>
-
-              <Pressable
                 onPress={handleSubmit}
                 style={({ pressed }) => [
                   {
@@ -392,6 +372,13 @@ export default function StudiesInfoScreen ({ navigation, route }) {
                   </Text>
                 </View>
               </Pressable>
+
+              <CancelButton
+              onCancel={() => {
+                setShowModal(false)
+              }}
+              />
+
               </>
             )}
             </Formik>

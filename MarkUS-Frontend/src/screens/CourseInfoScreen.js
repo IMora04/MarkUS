@@ -3,7 +3,7 @@ import { Text, StyleSheet, Dimensions, View, Pressable, Switch, ActivityIndicato
 import { FlatList } from 'react-native-gesture-handler'
 import * as GlobalStyles from '../styles/GlobalStyles'
 import { showMessage } from 'react-native-flash-message'
-import { getDetail } from '../api/CourseEndpoints'
+import { getDetail, remove } from '../api/CourseEndpoints'
 import CreateStudiesModal from '../components/CreateModal'
 import { ErrorMessage, Formik } from 'formik'
 import * as yup from 'yup'
@@ -13,16 +13,18 @@ import { create } from '../api/SubjectEndpoints'
 import AddButton from '../components/AddButton'
 import TopSubjects from '../components/TopSubjects'
 import { AuthorizationContext } from '../context/AuthorizationContext'
+import DeleteModal from '../components/DeleteModal'
 
 export default function CourseInfoScreen ({ navigation, route }) {
   const [currentCourse, setCurrentCourse] = useState({})
-  const [showModal, setShowModal] = useState(false)
+  const [showCreateModal, setShowCreateModal] = useState(false)
   const [backendErrors, setBackendErrors] = useState()
   const [loading, setLoading] = useState(true)
   const { loggedInUser } = useContext(AuthorizationContext)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
   const initialValues = { name: null, shortName: null, isAnual: false, secondSemester: false, credits: null }
-  const studiesName = route.params.currentStudies
+  const studiesName = route.params.currentStudies.name
   const topSubjects = currentCourse.subjects?.sort(
     function (a, b) {
       return a.officialMark - b.officialMark
@@ -124,7 +126,7 @@ export default function CourseInfoScreen ({ navigation, route }) {
         style: GlobalStyles.flashStyle,
         titleStyle: GlobalStyles.flashTextStyle
       })
-      setShowModal(false)
+      setShowCreateModal(false)
       await fetchCourse(route.params.id)
     } catch (error) {
       console.log(error)
@@ -155,19 +157,41 @@ export default function CourseInfoScreen ({ navigation, route }) {
     )
   }
 
+  const removeCourse = async (id) => {
+    try {
+      await remove(id)
+      setShowDeleteModal(false)
+      navigation.navigate('Studies info', { id: route.params.currentStudies.id })
+      showMessage({
+        message: 'Course succesfully removed',
+        type: 'success',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+    } catch (error) {
+      console.log(error)
+      showMessage({
+        message: 'Studies could not be removed.',
+        type: 'error',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+    }
+  }
+
   return (
     loading
       ? <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
       <ActivityIndicator/>
     </View>
-      : <View style={{ padding: 20 }}>
-      <View style={{ marginVertical: 10 }}>
-        <Text>{studiesName} - {courseMapper[currentCourse.number]} course</Text>
+      : <View style={{ padding: 20, height: '100%' }}>
+      <View style={{ marginBottom: 20 }}>
+        <Text style={{ textAlign: 'center', fontWeight: 600, fontSize: 20 }}>{studiesName} - {courseMapper[currentCourse.number]} course</Text>
       </View>
 
       {
         (currentCourse.subjects && currentCourse.subjects.length !== 0)
-          ? <>
+          ? <View>
         <FlatList
         data={currentCourse.subjects.filter((s) => s.isAnual)}
         renderItem={renderSubject}
@@ -191,7 +215,7 @@ export default function CourseInfoScreen ({ navigation, route }) {
           keyExtractor={item => item.id.toString()}
           />
         </View>
-        </>
+        </View>
           : <>
           {
             renderEmptySubjects()
@@ -199,11 +223,11 @@ export default function CourseInfoScreen ({ navigation, route }) {
         </>
       }
 
-      <View style={{ marginTop: 10, alignSelf: 'center', alignItems: 'center' }}>
+      <View style={{ marginTop: 20, alignSelf: 'center', alignItems: 'center' }}>
         {
           <AddButton
           name='subject'
-          onCreate={() => setShowModal(true)}
+          onCreate={() => setShowCreateModal(true)}
           />
         }
       </View>
@@ -211,12 +235,29 @@ export default function CourseInfoScreen ({ navigation, route }) {
       <TopSubjects
         width={dimensions.window.width}
         topSubjects={topSubjects}
-        style={{ alignSelf: 'flex-start', marginTop: 10, marginLeft: 0 }}
+        style={{ alignSelf: 'flex-start', marginTop: 20 }}
       />
 
+      <View style={{ position: 'absolute', left: '50%', bottom: 20, width: 200, marginLeft: -80 }}>
+        <Pressable
+          onPress={() => setShowDeleteModal(true)}
+        >
+          <Text style={{ color: GlobalStyles.appRed, textAlign: 'center' }}>Delete this course</Text>
+        </Pressable>
+      </View>
+
+      <DeleteModal
+      isVisible={showDeleteModal}
+      onCancel={() => setShowDeleteModal(false)}
+      name={'course'}
+      onConfirm={() => removeCourse(currentCourse.id)}
+      >
+
+      </DeleteModal>
+
       <CreateStudiesModal
-        isVisible={showModal}
-        onCancel={() => setShowModal(false)}
+        isVisible={showCreateModal}
+        onCancel={() => setShowCreateModal(false)}
       >
         {
           currentCourse.subjects?.map((s) => s.credits).reduce((accumulator, currentValue) => {
@@ -283,7 +324,7 @@ export default function CourseInfoScreen ({ navigation, route }) {
                 }
 
                 <Pressable
-                  onPress={() => setShowModal(false)}
+                  onPress={() => setShowCreateModal(false)}
                   style={({ pressed }) => [
                     {
                       backgroundColor: pressed

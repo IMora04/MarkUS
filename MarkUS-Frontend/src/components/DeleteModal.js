@@ -3,6 +3,7 @@ import { Modal, Pressable, StyleSheet, View, Text } from 'react-native'
 import { BlurView } from 'expo-blur'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as GlobalStyles from '../styles/GlobalStyles'
+import CancelButton from './CancelButton'
 
 export default function DeleteModal (props) {
   return (
@@ -24,46 +25,34 @@ export default function DeleteModal (props) {
       }
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <View style={{ marginVertical: 10 }}>
-            <Text style={styles.text}>Are you sure you want to delete these studies?</Text>
-            <Text style={styles.text}>All courses, subjects and marks will be deleted as well.</Text>
+        <Text style={[styles.text, { fontWeight: 600, fontSize: 20 }]}>Delete {props.name}</Text>
+          <View>
+          <Text style={styles.text}>{'\n'}Are you sure you want to delete this {props.name}?</Text>
+            <Text style={styles.text}>{'\n'}All {props.name === 'course' ? '' : 'courses,'} subjects and marks will be deleted as well.</Text>
           </View>
-
-          <Pressable
-            onPress={props.onCancel}
-            style={({ pressed }) => [
-              {
-                backgroundColor: pressed
-                  ? GlobalStyles.brandSuccessTap
-                  : GlobalStyles.brandSuccess
-              },
-              styles.actionButton]}
-          >
-            <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-            <MaterialCommunityIcons name='content-save' color={'white'} size={20}/>
-            <Text style={[styles.text, { color: 'white' }]}>
-                Cancel
-            </Text>
-            </View>
-          </Pressable>
 
           <Pressable
             onPress={props.onConfirm}
             style={({ pressed }) => [
               {
                 backgroundColor: pressed
-                  ? GlobalStyles.brandPrimaryTap
-                  : GlobalStyles.brandPrimary
+                  ? GlobalStyles.appRedTap
+                  : GlobalStyles.appRed,
+                marginTop: 35
               },
               styles.actionButton]}
           >
             <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
             <MaterialCommunityIcons name='delete' color={'white'} size={20}/>
             <Text style={[styles.text, { color: 'white' }]}>
-                Confirm
+                Delete
             </Text>
             </View>
           </Pressable>
+
+          <CancelButton
+          onCancel={props.onCancel}
+          />
 
         </View>
       </View>
@@ -105,7 +94,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: 'black',
-    alignSelf: 'start',
+    textAlign: 'left',
     marginLeft: 5
   },
   absolute: {
