@@ -65,6 +65,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
     try {
       const fetchedStudies = await getDetail(id)
       setCurrentStudies(fetchedStudies)
+      setLoading(false)
     } catch (error) {
       showMessage({
         message: `There was an error while retrieving studies. ${error} `,
@@ -78,7 +79,6 @@ export default function StudiesInfoScreen ({ navigation, route }) {
   useEffect(() => {
     setLoading(true)
     fetchOneStudies(route.params.id)
-    setLoading(false)
   }, [route])
 
   useEffect(() => {

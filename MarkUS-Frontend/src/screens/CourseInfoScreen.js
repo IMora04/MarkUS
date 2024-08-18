@@ -74,6 +74,7 @@ export default function CourseInfoScreen ({ navigation, route }) {
     try {
       const fetchedCourse = await getDetail(id)
       setCurrentCourse(fetchedCourse)
+      setLoading(false)
     } catch (error) {
       showMessage({
         message: `There was an error while retrieving this course. ${error} `,
@@ -87,7 +88,6 @@ export default function CourseInfoScreen ({ navigation, route }) {
   useEffect(() => {
     setLoading(true)
     fetchCourse(route.params.id)
-    setLoading(false)
   }, [route])
 
   useEffect(() => {

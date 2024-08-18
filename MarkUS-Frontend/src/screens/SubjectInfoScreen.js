@@ -44,6 +44,7 @@ export default function CourseInfoScreen ({ navigation, route }) {
     try {
       const fetchedSubject = await getDetail(id)
       setCurrentSubject(fetchedSubject)
+      setLoading(false)
     } catch (error) {
       showMessage({
         message: `There was an error while retrieving this subject. ${error} `,
@@ -61,7 +62,6 @@ export default function CourseInfoScreen ({ navigation, route }) {
   useEffect(() => {
     setLoading(true)
     fetchOneSubject(route.params.id)
-    setLoading(false)
   }, [route])
 
   const renderCategories = ({ item }) => {
