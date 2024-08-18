@@ -40,6 +40,8 @@ export default function StudiesCard (props) {
 
 const styles = StyleSheet.create({
   studiesCard: {
+    borderRadius: 15,
+    backgroundColor: 'white',
     marginVertical: 5,
     flexDirection: 'row',
     alignItems: 'center'
