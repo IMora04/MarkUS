@@ -9,14 +9,25 @@ export default function StudiesCard (props) {
       {
         props.editing &&
         <Pressable
-          style={({ pressed }) => [{ backgroundColor: pressed ? GlobalStyles.appRedTap : GlobalStyles.appRed, borderRadius: 15, height: 30, width: 30, alignItems: 'center', justifyContent: 'center', marginLeft: 5, flexGrow: 0 }]}
+          style={({ pressed }) => [{
+            backgroundColor: pressed
+              ? GlobalStyles.appRedTap
+              : GlobalStyles.appRed
+          }, styles.deleteBox]}
           onPress={props.onDelete}
         >
           <MaterialCommunityIcons name='delete-outline' color={'white'} size={20}/>
         </Pressable>
       }
       <Pressable
-        style={({ pressed }) => [{ padding: 10, flex: 1, borderRadius: 15, backgroundColor: pressed ? GlobalStyles.appWhiteTap : 'white' }]}
+        style={({ pressed }) => [{
+          padding: 10,
+          flex: 1,
+          borderRadius: 15,
+          backgroundColor: pressed
+            ? GlobalStyles.appWhiteTap
+            : 'white'
+        }]}
         onPress={props.onPress}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -45,5 +56,13 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     flexDirection: 'row',
     alignItems: 'center'
+  },
+  deleteBox: {
+    borderRadius: 15,
+    height: 30,
+    width: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 10
   }
 })

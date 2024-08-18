@@ -16,6 +16,7 @@ import StudiesCard from '../../components/StudiesCard'
 import DeleteModal from '../../components/modals/DeleteModal'
 import DoubleButtons from '../../components/buttons/DoubleButtons'
 import CancelButton from '../../components/buttons/CancelButton'
+import CreateEditButton from '../../components/buttons/CreateEditButton'
 
 export default function StudiesScreen ({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext)
@@ -215,23 +216,26 @@ export default function StudiesScreen ({ navigation, route }) {
               style={{ marginVertical: 10 }}
               data = {studies}
               scrollEnabled={false}
-              renderItem={({ item }) => <StudiesCard
-              onPress={
-                editing
-                  ? () => {
-                      setInitialValues({ name: item.name, credits: item.credits, description: item.description, logo: item.logo, hasTrimesters: item.hasTrimesters, years: item.years })
-                      setShowCreateModal(true)
-                      setEditingId(item.id)
-                    }
-                  : () => { navigation.navigate('Studies info', { id: item.id }) }
-              }
-              onDelete={() => {
-                setShowDeleteModal(true)
-                setEditingId(item.id)
+              renderItem={({ item }) => {
+                return (
+                <StudiesCard
+                onPress={
+                  editing
+                    ? () => {
+                        setInitialValues({ name: item.name, credits: item.credits, description: item.description, logo: item.logo, hasTrimesters: item.hasTrimesters, years: item.years })
+                        setShowCreateModal(true)
+                        setEditingId(item.id)
+                      }
+                    : () => { navigation.navigate('Studies info', { id: item.id }) }
+                }
+                onDelete={() => {
+                  setShowDeleteModal(true)
+                  setEditingId(item.id)
+                }}
+                item={item}
+                editing={editing}/>
+                )
               }}
-              item={item}
-              editing={editing}/>
-              }
               keyExtractor={item => item.id.toString()}
             />
 
@@ -244,7 +248,7 @@ export default function StudiesScreen ({ navigation, route }) {
               isVisible={showCreateModal}
               onCancel={() => setShowCreateModal(false)}
             >
-              <View style={{ maxHeight: dimensions.window.width < 450 ? 500 : 680, width: '90%' }}>
+              <View style={{ maxHeight: dimensions.window.width < 450 ? 550 : 680, width: '90%' }}>
                 <Text style={{ fontSize: 15, textAlign: 'center', marginBottom: 5 }}>Introduce new studies details</Text>
 
                 <Formik
@@ -303,7 +307,7 @@ export default function StudiesScreen ({ navigation, route }) {
 
                         <Pressable
                           style={{ alignSelf: 'center', margin: 5, borderWidth: 1, borderRadius: 5, padding: 5, backgroundColor: GlobalStyles.brandBackground }}
-                          onPress={() => { setFieldValue('logo', null) }}
+                          onPress={async () => { await setFieldValue('logo', null) }}
                         >
                           <MaterialCommunityIcons name='delete' color={'black'} size={20}/>
                         </Pressable>
@@ -315,23 +319,11 @@ export default function StudiesScreen ({ navigation, route }) {
                       </View>
                     </ScrollView>
 
-                    <Pressable
-                      onPress={editing ? async () => { await updateStudies(values) } : async () => { await createStudies(values) } }
-                      style={({ pressed }) => [
-                        {
-                          backgroundColor: pressed
-                            ? GlobalStyles.appGreenTap
-                            : GlobalStyles.appGreen
-                        },
-                        styles.actionButton]}
-                      >
-                      <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-                        <MaterialCommunityIcons name={editing ? 'content-save' : 'check'} color={'white'} size={20}/>
-                        <Text style={styles.text}>
-                          {editing ? 'Confirm' : 'Create'}
-                        </Text>
-                      </View>
-                    </Pressable>
+                    <CreateEditButton
+                    editing={editing}
+                    onEdit={async () => await updateStudies(values)}
+                    onCreate={async () => await createStudies(values)}
+                    />
 
                     <CancelButton
                     onCancel={() => setShowCreateModal(false)}
@@ -341,14 +333,15 @@ export default function StudiesScreen ({ navigation, route }) {
                   )}
                 </Formik>
               </View>
-
             </CreateModal>
+
             <DeleteModal
               isVisible={showDeleteModal}
               onCancel={() => setShowDeleteModal(false)}
               onConfirm={() => removeStudies(editingId)}
               name={'studies'}
             />
+
           </>
           : <View style={{ justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%' }}>
             <Text style={{ fontSize: 15 }}>You are not logged in!</Text>
