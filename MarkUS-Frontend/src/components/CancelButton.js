@@ -9,6 +9,9 @@ export default function CancelButton (props) {
     style={({ pressed }) => [
       {
         borderColor: GlobalStyles.appBlue,
+        backgroundColor: pressed
+          ? GlobalStyles.appWhiteTap
+          : 'white',
         borderWidth: 1
       },
       styles.actionButton]}
