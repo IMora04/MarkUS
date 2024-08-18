@@ -25,6 +25,13 @@ const loadFileRoutes = function (app) {
       //CourseMiddleware.checkCourseOwnership,
       CourseController.show
     )
+    .delete(
+      isLoggedIn,
+      checkEntityExists(Course, 'courseId'),
+      //CourseMiddleware.checkCourseOwnership,
+      CourseController.destroy
+    )
+
 }
 
 export default loadFileRoutes

@@ -26,10 +26,26 @@ const create = async (req, res) => {
     res.status(500).send(err)
   }
 }
+
+const destroy = async function (req, res) {
+  try {
+    const result = await Course.destroy({ where: { id: req.params.courseId } })
+    let message = ''
+    if (result === 1) {
+      message = 'Sucessfuly deleted Course id.' + req.params.courseId
+    } else {
+      message = 'Could not delete Course.'
+    }
+    res.json(message)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
   
 const CourseController = {
   show,
-  create
+  create,
+  destroy
 }
 export default CourseController
   
