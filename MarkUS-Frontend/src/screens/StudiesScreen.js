@@ -213,6 +213,7 @@ export default function StudiesScreen ({ navigation, route }) {
             <FlatList
               style={{ marginVertical: 10 }}
               data = {studies}
+              scrollEnabled={false}
               renderItem={({ item }) => <StudiesCard
               onPress={
                 editing
@@ -318,8 +319,8 @@ export default function StudiesScreen ({ navigation, route }) {
                       style={({ pressed }) => [
                         {
                           backgroundColor: pressed
-                            ? GlobalStyles.brandPrimary
-                            : GlobalStyles.brandPrimaryTap
+                            ? GlobalStyles.appRedTap
+                            : GlobalStyles.appRed
                         },
                         styles.actionButton]}
                     >
@@ -336,8 +337,8 @@ export default function StudiesScreen ({ navigation, route }) {
                       style={({ pressed }) => [
                         {
                           backgroundColor: pressed
-                            ? GlobalStyles.brandSuccessTap
-                            : GlobalStyles.brandSuccess
+                            ? GlobalStyles.appGreenTap
+                            : GlobalStyles.appGreen
                         },
                         styles.actionButton]}
                       >

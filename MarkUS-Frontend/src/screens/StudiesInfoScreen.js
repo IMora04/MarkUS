@@ -360,8 +360,8 @@ export default function StudiesInfoScreen ({ navigation, route }) {
                 style={({ pressed }) => [
                   {
                     backgroundColor: pressed
-                      ? GlobalStyles.brandPrimary
-                      : GlobalStyles.brandPrimaryTap
+                      ? GlobalStyles.appRedTap
+                      : GlobalStyles.appRed
                   },
                   styles.actionButton]}
               >
@@ -378,8 +378,8 @@ export default function StudiesInfoScreen ({ navigation, route }) {
                 style={({ pressed }) => [
                   {
                     backgroundColor: pressed
-                      ? GlobalStyles.brandSuccessTap
-                      : GlobalStyles.brandSuccess
+                      ? GlobalStyles.appGreenTap
+                      : GlobalStyles.appGreen
                   },
                   styles.actionButton]}
                 >

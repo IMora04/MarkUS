@@ -6,7 +6,7 @@ import * as GlobalStyles from '../styles/GlobalStyles'
 export default function AddButton (props) {
   return (
     <Pressable
-        style={[styles.homeButton, { backgroundColor: GlobalStyles.appGreen }, props.style]}
+        style={({ pressed }) => [styles.homeButton, { backgroundColor: pressed ? GlobalStyles.appGreenTap : GlobalStyles.appGreen }, props.style]}
         onPress={props.onCreate}
     >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>

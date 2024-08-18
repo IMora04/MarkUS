@@ -6,7 +6,7 @@ import * as GlobalStyles from '../styles/GlobalStyles'
 export default function EditCancelButton (props) {
   return (
     <Pressable
-    style={[styles.homeButton, { backgroundColor: props.editing ? GlobalStyles.appRed : GlobalStyles.appBlue }, props.style]}
+    style={({ pressed }) => [styles.homeButton, { backgroundColor: props.editing ? (pressed ? GlobalStyles.appRedTap : GlobalStyles.appRed) : (pressed ? GlobalStyles.appBlueTap : GlobalStyles.appBlue) }, props.style]}
     onPress={props.editing ? props.onCancel : props.onEdit}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', width: 120, justifyContent: 'center' }}>
