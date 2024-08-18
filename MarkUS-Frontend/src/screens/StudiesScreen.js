@@ -85,7 +85,6 @@ export default function StudiesScreen ({ navigation, route }) {
     try {
       const fetchedStudies = await getAll()
       setStudies(fetchedStudies)
-      setLoading(false)
     } catch (error) {
       showMessage({
         message: `There was an error while retrieving studies. ${error} `,
@@ -99,6 +98,7 @@ export default function StudiesScreen ({ navigation, route }) {
   useEffect(() => {
     setLoading(true)
     fetchStudies()
+    setLoading(false)
   }, [isFocused, loggedInUser])
 
   const pickImage = async (onSuccess) => {

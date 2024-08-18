@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Pressable, Text, View, StyleSheet, Dimensions, ActivityIndicator, ScrollView } from 'react-native'
+import { Pressable, Text, View, StyleSheet, Dimensions, ActivityIndicator, ScrollView, Platform } from 'react-native'
 import { AuthorizationContext } from '../context/AuthorizationContext'
 import { getAll, getDetail } from '../api/StudiesEndpoints'
 import { create } from '../api/CourseEndpoints'
@@ -24,6 +24,7 @@ export default function StudiesInfoScreen ({ navigation, route }) {
   const [loading, setLoading] = useState(true)
   const [backendErrors, setBackendErrors] = useState()
   const [showModal, setShowModal] = useState(false)
+  const [selected, setSelected] = useState(route.params.id)
 
   const initialValues = { credits: null, number: null }
   const validationSchema = yup.object().shape({
@@ -61,8 +62,15 @@ export default function StudiesInfoScreen ({ navigation, route }) {
     return () => subscription?.remove()
   })
 
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      fetchOneStudies(route.params.id)
+    }
+  }, [route.params.id])
+
   async function fetchOneStudies (id) {
     try {
+      setLoading(true)
       const fetchedStudies = await getDetail(id)
       setCurrentStudies(fetchedStudies)
       setLoading(false)
@@ -75,11 +83,6 @@ export default function StudiesInfoScreen ({ navigation, route }) {
       })
     }
   }
-
-  useEffect(() => {
-    setLoading(true)
-    fetchOneStudies(route.params.id)
-  }, [route])
 
   useEffect(() => {
     async function fetchStudies () {
@@ -176,10 +179,17 @@ export default function StudiesInfoScreen ({ navigation, route }) {
     return (
       <View>
         <RNPickerSelect
-          onValueChange={(value) => fetchOneStudies(value)}
+          onValueChange={(value) => {
+            setSelected(value)
+            if (Platform.OS !== 'ios' && currentStudies.id !== value) {
+              setLoading(true)
+              fetchOneStudies(value)
+            }
+          }}
+          onClose={() => { fetchOneStudies(selected) }}
           items={studiesNames}
           placeholder={{}}
-          value={currentStudies.id}
+          value={selected}
           style={pickerSelectStyles}
         />
       </View>
