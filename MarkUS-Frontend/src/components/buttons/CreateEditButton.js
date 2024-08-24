@@ -3,10 +3,10 @@ import { Pressable, StyleSheet, View, Text } from "react-native";
 import * as GlobalStyles from "../../styles/GlobalStyles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-export default function CancelButton(props) {
+export default function CreateEditButton(props) {
   return (
     <Pressable
-      onPress={props.editing ? props.onEdit : props.onCreate}
+      onPress={props.onSubmit}
       style={({ pressed }) => [
         {
           backgroundColor: pressed

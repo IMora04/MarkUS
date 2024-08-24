@@ -218,6 +218,10 @@ export default function StudiesScreen({ navigation, route }) {
     );
   };
 
+  const onSubmit = async (values) => {
+    return editing ? await updateStudies(values) : await createStudies(values);
+  };
+
   return loading ? (
     <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
       <ActivityIndicator />
@@ -288,7 +292,7 @@ export default function StudiesScreen({ navigation, route }) {
               <Formik
                 validationSchema={validationSchema}
                 initialValues={initialValues}
-                onSubmit={createStudies}
+                onSubmit={onSubmit}
               >
                 {({ handleSubmit, setFieldValue, values }) => (
                   <>
@@ -390,11 +394,7 @@ export default function StudiesScreen({ navigation, route }) {
                       </View>
                     </ScrollView>
 
-                    <CreateEditButton
-                      editing={editing}
-                      onEdit={async () => await updateStudies(values)}
-                      onCreate={async () => await createStudies(values)}
-                    />
+                    <CreateEditButton onSubmit={handleSubmit} />
 
                     <CancelButton onCancel={() => setShowCreateModal(false)} />
                   </>
