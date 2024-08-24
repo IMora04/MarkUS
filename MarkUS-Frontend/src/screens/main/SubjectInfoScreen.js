@@ -166,7 +166,7 @@ export default function CourseInfoScreen({ navigation, route }) {
 
   const renderAddButton = () => {
     if (
-      currentSubject.evaluables
+      (currentSubject.evaluables || [])
         .flatMap((e) => e.weight)
         .reduce((partialSum, a) => partialSum + a, 0) >= 100
     ) {

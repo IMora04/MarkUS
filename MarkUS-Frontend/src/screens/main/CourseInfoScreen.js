@@ -56,6 +56,11 @@ export default function CourseInfoScreen({ navigation, route }) {
         credits: s.credits,
       };
     });
+  const coveredCredits = currentCourse.subjects
+    ?.map((s) => s.credits)
+    .reduce((accumulator, currentValue) => {
+      return accumulator + currentValue;
+    }, 0);
 
   const validationSchema = yup.object().shape({
     name: yup.string().max(255, "Name too long").required("Name is required"),
@@ -261,16 +266,22 @@ export default function CourseInfoScreen({ navigation, route }) {
             <>{renderEmptySubjects()}</>
           )}
 
-          <View
-            style={{ marginTop: 20, alignSelf: "center", alignItems: "center" }}
-          >
-            {
-              <AddButton
-                name="subject"
-                onCreate={() => setShowCreateModal(true)}
-              />
-            }
-          </View>
+          {coveredCredits < currentCourse.credits && (
+            <View
+              style={{
+                marginTop: 20,
+                alignSelf: "center",
+                alignItems: "center",
+              }}
+            >
+              {
+                <AddButton
+                  name="subject"
+                  onCreate={() => setShowCreateModal(true)}
+                />
+              }
+            </View>
+          )}
 
           <TopSubjects
             width={dimensions.window.width}
@@ -295,11 +306,7 @@ export default function CourseInfoScreen({ navigation, route }) {
         isVisible={showCreateModal}
         onCancel={() => setShowCreateModal(false)}
       >
-        {currentCourse.subjects
-          ?.map((s) => s.credits)
-          .reduce((accumulator, currentValue) => {
-            return accumulator + currentValue;
-          }, 0) >= currentCourse.credits ? (
+        {coveredCredits >= currentCourse.credits ? (
           <View>
             <Text>
               You have already covered {currentCourse.credits} credits.
