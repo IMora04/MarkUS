@@ -6,6 +6,22 @@ import * as GlobalStyles from "../../styles/GlobalStyles";
 import CancelButton from "../buttons/CancelButton";
 
 export default function DeleteModal(props) {
+  let deleteText;
+  switch (props.name) {
+    case "studies":
+      deleteText =
+        "All its courses, subjects and marks will be deleted as well";
+      break;
+    case "course":
+      deleteText = "All its subjects and marks will be deleted as well";
+      break;
+    case "subject":
+      deleteText = "All its evaluables and marks will be deleted as well";
+      break;
+    default:
+      deleteText = "All its info will be deleted as well";
+  }
+
   return (
     <Modal
       presentationStyle="overFullScreen"
@@ -32,8 +48,8 @@ export default function DeleteModal(props) {
               {"\n"}Are you sure you want to delete this {props.name}?
             </Text>
             <Text style={styles.text}>
-              {"\n"}All {props.name === "course" ? "" : "courses,"} subjects and
-              marks will be deleted as well.
+              {"\n"}
+              {deleteText}
             </Text>
           </View>
 

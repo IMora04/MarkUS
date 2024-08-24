@@ -24,6 +24,7 @@ import TopSubjects from "../../components/TopSubjects";
 import { AuthorizationContext } from "../../context/AuthorizationContext";
 import DeleteModal from "../../components/modals/DeleteModal";
 import CancelButton from "../../components/buttons/CancelButton";
+import DeleteButton from "../../components/buttons/DeleteButton";
 
 export default function CourseInfoScreen({ navigation, route }) {
   const [currentCourse, setCurrentCourse] = useState({});
@@ -189,11 +190,8 @@ export default function CourseInfoScreen({ navigation, route }) {
 
   const removeCourse = async (id) => {
     try {
-      await remove(id);
+      // await remove(id);
       setShowDeleteModal(false);
-      navigation.navigate("Studies info", {
-        id: route.params.currentStudies.id,
-      });
       showMessage({
         message: "Course succesfully removed",
         type: "success",
@@ -224,63 +222,62 @@ export default function CourseInfoScreen({ navigation, route }) {
       </View>
 
       <ScrollView>
-        {currentCourse.subjects && currentCourse.subjects.length !== 0 ? (
-          <View>
-            <FlatList
-              data={currentCourse.subjects.filter((s) => s.isAnual)}
-              renderItem={renderSubject}
-              scrollEnabled={false}
-              keyExtractor={(item) => item.id.toString()}
-              ListHeaderComponent={renderHeader}
-            />
-            <View style={{ flexDirection: "row" }}>
+        <View style={{ minHeight: dimensions.window.height * 0.65 }}>
+          {currentCourse.subjects && currentCourse.subjects.length !== 0 ? (
+            <View>
               <FlatList
-                style={{ flex: 1 }}
-                data={currentCourse.subjects.filter(
-                  (s) => !s.secondSemester && !s.isAnual,
-                )}
+                data={currentCourse.subjects.filter((s) => s.isAnual)}
                 renderItem={renderSubject}
                 scrollEnabled={false}
                 keyExtractor={(item) => item.id.toString()}
+                ListHeaderComponent={renderHeader}
               />
-              <FlatList
-                style={{ flex: 1 }}
-                data={currentCourse.subjects.filter(
-                  (s) => s.secondSemester && !s.isAnual,
-                )}
-                renderItem={renderSubject}
-                scrollEnabled={false}
-                keyExtractor={(item) => item.id.toString()}
-              />
+              <View style={{ flexDirection: "row" }}>
+                <FlatList
+                  style={{ flex: 1 }}
+                  data={currentCourse.subjects.filter(
+                    (s) => !s.secondSemester && !s.isAnual,
+                  )}
+                  renderItem={renderSubject}
+                  scrollEnabled={false}
+                  keyExtractor={(item) => item.id.toString()}
+                />
+                <FlatList
+                  style={{ flex: 1 }}
+                  data={currentCourse.subjects.filter(
+                    (s) => s.secondSemester && !s.isAnual,
+                  )}
+                  renderItem={renderSubject}
+                  scrollEnabled={false}
+                  keyExtractor={(item) => item.id.toString()}
+                />
+              </View>
             </View>
+          ) : (
+            <>{renderEmptySubjects()}</>
+          )}
+
+          <View
+            style={{ marginTop: 20, alignSelf: "center", alignItems: "center" }}
+          >
+            {
+              <AddButton
+                name="subject"
+                onCreate={() => setShowCreateModal(true)}
+              />
+            }
           </View>
-        ) : (
-          <>{renderEmptySubjects()}</>
-        )}
 
-        <View
-          style={{ marginTop: 20, alignSelf: "center", alignItems: "center" }}
-        >
-          {
-            <AddButton
-              name="subject"
-              onCreate={() => setShowCreateModal(true)}
-            />
-          }
+          <TopSubjects
+            width={dimensions.window.width}
+            topSubjects={topSubjects}
+          />
         </View>
 
-        <TopSubjects
-          width={dimensions.window.width}
-          topSubjects={topSubjects}
+        <DeleteButton
+          name={"course"}
+          onDelete={() => setShowDeleteModal(true)}
         />
-
-        <View style={{ marginTop: 40 }}>
-          <Pressable onPress={() => setShowDeleteModal(true)}>
-            <Text style={{ color: GlobalStyles.appRed, textAlign: "center" }}>
-              Delete this course
-            </Text>
-          </Pressable>
-        </View>
       </ScrollView>
 
       <DeleteModal

@@ -4,24 +4,25 @@ import {
   StyleSheet,
   Dimensions,
   View,
-  Pressable,
-  Switch,
   ActivityIndicator,
   ScrollView,
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import * as GlobalStyles from "../../styles/GlobalStyles";
 import { showMessage } from "react-native-flash-message";
-import { getDetail } from "../../api/SubjectEndpoints";
+import { getDetail, remove } from "../../api/SubjectEndpoints";
 import * as yup from "yup";
 import { AuthorizationContext } from "../../context/AuthorizationContext";
 import AddButton from "../../components/buttons/AddButton";
+import DeleteButton from "../../components/buttons/DeleteButton";
+import DeleteModal from "../../components/modals/DeleteModal";
 
 export default function CourseInfoScreen({ navigation, route }) {
   const [backendErrors, setBackendErrors] = useState();
   const [loading, setLoading] = useState(true);
   const [currentSubject, setCurrentSubject] = useState({});
   const { loggedInUser } = useContext(AuthorizationContext);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     if (!loggedInUser) {
@@ -110,6 +111,30 @@ export default function CourseInfoScreen({ navigation, route }) {
     );
   };
 
+  const removeSubject = async (id) => {
+    try {
+      await remove(id);
+      setShowDeleteModal(false);
+      navigation.navigate("Course info", {
+        id: route.params.currentCourse.id,
+      });
+      showMessage({
+        message: "Subject succesfully removed",
+        type: "success",
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle,
+      });
+    } catch (error) {
+      console.log(error);
+      showMessage({
+        message: "Subject could not be removed.",
+        type: "error",
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle,
+      });
+    }
+  };
+
   return loading ? (
     <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
       <ActivityIndicator />
@@ -126,11 +151,24 @@ export default function CourseInfoScreen({ navigation, route }) {
       >
         {currentSubject.name}
       </Text>
-      <FlatList
-        scrollEnabled={false}
-        data={evaluableTypes}
-        renderItem={renderEvaluableType}
-        ListEmptyComponent={renderEmptyList}
+      <ScrollView>
+        <FlatList
+          scrollEnabled={false}
+          data={evaluableTypes}
+          renderItem={renderEvaluableType}
+          ListEmptyComponent={renderEmptyList}
+          contentContainerStyle={{ minHeight: dimensions.window.height * 0.65 }}
+        />
+        <DeleteButton
+          name={"subject"}
+          onDelete={() => setShowDeleteModal(true)}
+        />
+      </ScrollView>
+      <DeleteModal
+        isVisible={showDeleteModal}
+        onCancel={() => setShowDeleteModal(false)}
+        name={"subject"}
+        onConfirm={() => removeSubject(currentSubject.id)}
       />
     </View>
   );
