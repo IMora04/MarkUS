@@ -16,11 +16,13 @@ import { AuthorizationContext } from "../../context/AuthorizationContext";
 import AddButton from "../../components/buttons/AddButton";
 import DeleteButton from "../../components/buttons/DeleteButton";
 import DeleteModal from "../../components/modals/DeleteModal";
+import { StudiesContext } from "../../context/StudiesContext";
 
 export default function CourseInfoScreen({ navigation, route }) {
   const [backendErrors, setBackendErrors] = useState();
   const [loading, setLoading] = useState(true);
-  const [currentSubject, setCurrentSubject] = useState({});
+  const { currentSubject, setCurrentSubject, currentCourse } =
+    useContext(StudiesContext);
   const { loggedInUser } = useContext(AuthorizationContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -116,8 +118,9 @@ export default function CourseInfoScreen({ navigation, route }) {
       await remove(id);
       setShowDeleteModal(false);
       navigation.navigate("Course info", {
-        id: route.params.currentCourse.id,
+        id: currentCourse.id,
       });
+      setCurrentSubject({});
       showMessage({
         message: "Subject succesfully removed",
         type: "success",

@@ -3,9 +3,9 @@ import React, { useState, createContext } from "react";
 const StudiesContext = createContext();
 
 const StudiesContextProvider = (props) => {
-  const [currentStudies, setCurrentStudies] = useState();
-  const [currentCourse, setCurrentCourse] = useState();
-  const [currentSubject, setCurrentSubject] = useState();
+  const [currentStudies, setCurrentStudies] = useState({});
+  const [currentCourse, setCurrentCourse] = useState({});
+  const [currentSubject, setCurrentSubject] = useState({});
 
   return (
     <StudiesContext.Provider

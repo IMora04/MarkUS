@@ -26,10 +26,11 @@ import AddButton from "../../components/buttons/AddButton";
 import TopSubjects from "../../components/TopSubjects";
 import RNPickerSelect from "react-native-picker-select";
 import CancelButton from "../../components/buttons/CancelButton";
+import { StudiesContext } from "../../context/StudiesContext";
 
 export default function StudiesInfoScreen({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext);
-  const [currentStudies, setCurrentStudies] = useState({});
+  const { currentStudies, setCurrentStudies } = useContext(StudiesContext);
   const [studiesNames, setStudiesNames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [backendErrors, setBackendErrors] = useState();
@@ -195,7 +196,7 @@ export default function StudiesInfoScreen({ navigation, route }) {
         <Pressable
           style={{ margin: 10 }}
           onPress={() => {
-            navigation.navigate("Course info", { id: item.id, currentStudies });
+            navigation.navigate("Course info", { id: item.id });
           }}
         >
           <Text>{courseMapper[item.number]} course</Text>

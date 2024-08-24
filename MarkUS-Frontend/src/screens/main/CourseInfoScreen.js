@@ -25,9 +25,11 @@ import { AuthorizationContext } from "../../context/AuthorizationContext";
 import DeleteModal from "../../components/modals/DeleteModal";
 import CancelButton from "../../components/buttons/CancelButton";
 import DeleteButton from "../../components/buttons/DeleteButton";
+import { StudiesContext } from "../../context/StudiesContext";
 
 export default function CourseInfoScreen({ navigation, route }) {
-  const [currentCourse, setCurrentCourse] = useState({});
+  const { currentCourse, setCurrentCourse, currentStudies } =
+    useContext(StudiesContext);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [backendErrors, setBackendErrors] = useState();
   const [loading, setLoading] = useState(true);
@@ -41,7 +43,7 @@ export default function CourseInfoScreen({ navigation, route }) {
     secondSemester: false,
     credits: null,
   };
-  const studiesName = route.params.currentStudies.name;
+  const studiesName = currentStudies.name;
   const topSubjects = currentCourse.subjects
     ?.sort(function (a, b) {
       return a.officialMark - b.officialMark;
@@ -129,7 +131,7 @@ export default function CourseInfoScreen({ navigation, route }) {
       <Pressable
         style={styles.box}
         onPress={() => {
-          navigation.navigate("Subject info", { id: item.id, currentCourse });
+          navigation.navigate("Subject info", { id: item.id });
         }}
       >
         <Text style={{ textAlign: "center", padding: 10 }}>
@@ -190,8 +192,10 @@ export default function CourseInfoScreen({ navigation, route }) {
 
   const removeCourse = async (id) => {
     try {
-      // await remove(id);
+      await remove(id);
       setShowDeleteModal(false);
+      navigation.navigate("Studies info", { id: currentStudies.id });
+      setCurrentCourse({});
       showMessage({
         message: "Course succesfully removed",
         type: "success",
