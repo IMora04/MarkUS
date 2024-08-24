@@ -154,25 +154,25 @@ export default function StudiesInfoScreen({ navigation, route }) {
     provisionalAvg: (
       stats.subjects?.reduce((acc, cv) => acc + cv.credits * cv.avgMark, 0) /
         stats.subjects?.reduce((acc, cv) => acc + cv.credits, 0) || 0
-    ).toFixed(3),
+    ).toFixed(2),
     officialAvg: (
       stats.subjects?.reduce(
         (acc, cv) => acc + cv.credits * cv.officialMark,
         0,
       ) / stats.subjects?.reduce((acc, cv) => acc + cv.credits, 0) || 0
-    ).toFixed(3),
+    ).toFixed(2),
     provisionalTakenAvg: (
       stats.takenSubjects?.reduce(
         (acc, cv) => acc + cv.credits * cv.avgMark,
         0,
       ) / stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits, 0) || 0
-    ).toFixed(3),
+    ).toFixed(2),
     officialTakenAvg: (
       stats.takenSubjects?.reduce(
         (acc, cv) => acc + cv.credits * cv.officialMark,
         0,
       ) / stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits, 0) || 0
-    ).toFixed(3),
+    ).toFixed(2),
     topSubjects:
       stats.subjects?.length !== 0
         ? stats.subjects
