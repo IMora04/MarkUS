@@ -329,7 +329,13 @@ export default function CourseInfoScreen({ navigation, route }) {
                   <InputItem name="shortName" label="Short name:" />
                   <InputItem name="credits" label="Number of credits:" />
 
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: 5,
+                    }}
+                  >
                     <Text
                       style={{
                         marginVertical: 10,
