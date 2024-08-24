@@ -294,7 +294,6 @@ export default function StudiesInfoScreen({ navigation, route }) {
                 <TopSubjects
                   width={dimensions.window.width}
                   topSubjects={stats.topSubjects}
-                  style={{ alignSelf: "center", marginLeft: "-8%" }}
                 />
               </View>
             </>

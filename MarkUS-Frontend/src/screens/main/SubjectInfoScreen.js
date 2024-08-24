@@ -15,6 +15,7 @@ import { showMessage } from "react-native-flash-message";
 import { getDetail } from "../../api/SubjectEndpoints";
 import * as yup from "yup";
 import { AuthorizationContext } from "../../context/AuthorizationContext";
+import AddButton from "../../components/buttons/AddButton";
 
 export default function CourseInfoScreen({ navigation, route }) {
   const [backendErrors, setBackendErrors] = useState();
@@ -72,25 +73,40 @@ export default function CourseInfoScreen({ navigation, route }) {
     fetchOneSubject(route.params.id);
   }, [route]);
 
-  const renderCategories = ({ item }) => {
+  const renderEvaluableType = ({ item }) => {
     return (
       <View>
         <Text style={{ fontSize: 18, marginVertical: 10 }}>{item}s</Text>
         <FlatList
           data={currentSubject.evaluables.filter((e) => e.type.name === item)}
           keyExtractor={(e) => e.id}
-          renderItem={renderCategory}
+          renderItem={renderEvaluable}
           scrollEnabled={false}
         />
       </View>
     );
   };
 
-  const renderCategory = ({ item }) => {
+  const renderEvaluable = ({ item }) => {
     return (
       <Text style={{ margin: 2 }}>
         {item.name}: {item.mark ? item.mark : "No mark yet"} ({item.weight}%)
       </Text>
+    );
+  };
+
+  const renderEmptyList = () => {
+    return (
+      <View style={{ marginTop: 10 }}>
+        <Text style={{ textAlign: "center", fontSize: 15 }}>
+          No evaluables found
+        </Text>
+        <View
+          style={{ marginTop: 20, alignSelf: "center", alignItems: "center" }}
+        >
+          <AddButton onCreate={() => {}} name={"evaluable"} />
+        </View>
+      </View>
     );
   };
 
@@ -113,7 +129,8 @@ export default function CourseInfoScreen({ navigation, route }) {
       <FlatList
         scrollEnabled={false}
         data={evaluableTypes}
-        renderItem={renderCategories}
+        renderItem={renderEvaluableType}
+        ListEmptyComponent={renderEmptyList}
       />
     </View>
   );

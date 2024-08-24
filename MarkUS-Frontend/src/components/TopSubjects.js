@@ -13,19 +13,26 @@ export default function TopSubjects(props) {
           </Text>
         </View>
       ) : (
-        <View style={[{ marginLeft: 0, alignSelf: "center" }, props.style]}>
+        <View style={[{ alignSelf: "center", marginTop: 20 }, props.style]}>
           <Text style={{ textAlign: "center", fontSize: 15, marginBottom: 10 }}>
             Top 5 subjects
           </Text>
-          <BarChart
-            frontColor={GlobalStyles.appPurple}
-            disableScroll={true}
-            barWidth={props.width < 450 ? props.width / 15 : 40}
-            data={props.topSubjects}
-            stepHeight={20}
-            barBorderTopLeftRadius={5}
-            barBorderTopRightRadius={5}
-          />
+          <View
+            style={{
+              alignSelf: "center",
+              marginLeft: "-8%",
+            }}
+          >
+            <BarChart
+              frontColor={GlobalStyles.appPurple}
+              disableScroll={true}
+              barWidth={props.width < 450 ? props.width / 15 : 40}
+              data={props.topSubjects}
+              stepHeight={20}
+              barBorderTopLeftRadius={5}
+              barBorderTopRightRadius={5}
+            />
+          </View>
         </View>
       )}
     </>

@@ -6,6 +6,7 @@ import {
   View,
   Pressable,
   Switch,
+  ScrollView,
   ActivityIndicator,
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
@@ -222,74 +223,72 @@ export default function CourseInfoScreen({ navigation, route }) {
         </Text>
       </View>
 
-      {currentCourse.subjects && currentCourse.subjects.length !== 0 ? (
-        <View>
-          <FlatList
-            data={currentCourse.subjects.filter((s) => s.isAnual)}
-            renderItem={renderSubject}
-            scrollEnabled={false}
-            keyExtractor={(item) => item.id.toString()}
-            ListHeaderComponent={renderHeader}
-          />
-          <View style={{ flexDirection: "row" }}>
+      <ScrollView>
+        {currentCourse.subjects && currentCourse.subjects.length !== 0 ? (
+          <View>
             <FlatList
-              style={{ flex: 1 }}
-              data={currentCourse.subjects.filter(
-                (s) => !s.secondSemester && !s.isAnual,
-              )}
+              data={currentCourse.subjects.filter((s) => s.isAnual)}
               renderItem={renderSubject}
               scrollEnabled={false}
               keyExtractor={(item) => item.id.toString()}
+              ListHeaderComponent={renderHeader}
             />
-            <FlatList
-              style={{ flex: 1 }}
-              data={currentCourse.subjects.filter(
-                (s) => s.secondSemester && !s.isAnual,
-              )}
-              renderItem={renderSubject}
-              scrollEnabled={false}
-              keyExtractor={(item) => item.id.toString()}
-            />
+            <View style={{ flexDirection: "row" }}>
+              <FlatList
+                style={{ flex: 1 }}
+                data={currentCourse.subjects.filter(
+                  (s) => !s.secondSemester && !s.isAnual,
+                )}
+                renderItem={renderSubject}
+                scrollEnabled={false}
+                keyExtractor={(item) => item.id.toString()}
+              />
+              <FlatList
+                style={{ flex: 1 }}
+                data={currentCourse.subjects.filter(
+                  (s) => s.secondSemester && !s.isAnual,
+                )}
+                renderItem={renderSubject}
+                scrollEnabled={false}
+                keyExtractor={(item) => item.id.toString()}
+              />
+            </View>
           </View>
+        ) : (
+          <>{renderEmptySubjects()}</>
+        )}
+
+        <View
+          style={{ marginTop: 20, alignSelf: "center", alignItems: "center" }}
+        >
+          {
+            <AddButton
+              name="subject"
+              onCreate={() => setShowCreateModal(true)}
+            />
+          }
         </View>
-      ) : (
-        <>{renderEmptySubjects()}</>
-      )}
 
-      <View
-        style={{ marginTop: 20, alignSelf: "center", alignItems: "center" }}
-      >
-        {<AddButton name="subject" onCreate={() => setShowCreateModal(true)} />}
-      </View>
+        <TopSubjects
+          width={dimensions.window.width}
+          topSubjects={topSubjects}
+        />
 
-      <TopSubjects
-        width={dimensions.window.width}
-        topSubjects={topSubjects}
-        style={{ alignSelf: "flex-start", marginTop: 20 }}
-      />
-
-      <View
-        style={{
-          position: "absolute",
-          left: "50%",
-          bottom: 20,
-          width: 200,
-          marginLeft: -80,
-        }}
-      >
-        <Pressable onPress={() => setShowDeleteModal(true)}>
-          <Text style={{ color: GlobalStyles.appRed, textAlign: "center" }}>
-            Delete this course
-          </Text>
-        </Pressable>
-      </View>
+        <View style={{ marginTop: 40 }}>
+          <Pressable onPress={() => setShowDeleteModal(true)}>
+            <Text style={{ color: GlobalStyles.appRed, textAlign: "center" }}>
+              Delete this course
+            </Text>
+          </Pressable>
+        </View>
+      </ScrollView>
 
       <DeleteModal
         isVisible={showDeleteModal}
         onCancel={() => setShowDeleteModal(false)}
         name={"course"}
         onConfirm={() => removeCourse(currentCourse.id)}
-      ></DeleteModal>
+      />
 
       <CreateStudiesModal
         isVisible={showCreateModal}
