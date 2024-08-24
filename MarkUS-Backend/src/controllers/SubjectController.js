@@ -31,6 +31,21 @@ const show = async (req, res) => {
   }
 }
 
+const destroy = async function (req, res) {
+  try {
+    const result = await Subject.destroy({ where: { id: req.params.subjectId } })
+    let message = ''
+    if (result === 1) {
+      message = 'Sucessfuly deleted Subject id.' + req.params.studiesId
+    } else {
+      message = 'Could not delete Subject.'
+    }
+    res.json(message)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
 const _register = async (req, res, userType) => {
   try {
     req.body.userType = userType
@@ -49,7 +64,8 @@ const _register = async (req, res, userType) => {
   
 const SubjectController = {
   create,
-  show
+  show,
+  destroy
 }
 export default SubjectController
   

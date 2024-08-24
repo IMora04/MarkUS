@@ -21,6 +21,12 @@ const loadFileRoutes = function (app) {
       //SubjectMiddleware.checkSubjectOwnership,
       SubjectController.show
     )
+    .delete(
+      isLoggedIn,
+      checkEntityExists(Subject, 'subjectId'),
+      //StudiesMiddleware.checkStudiesOwnership,
+      SubjectController.destroy
+    )
 }
 
 export default loadFileRoutes
