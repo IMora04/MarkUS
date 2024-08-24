@@ -1,42 +1,45 @@
-import React, { useState, createContext } from 'react'
-import { LoginError, ValidationError } from '../api/helpers/Errors'
+import React, { useState, createContext } from "react";
+import { LoginError, ValidationError } from "../api/helpers/Errors";
 
-const AppContext = createContext()
+const AppContext = createContext();
 
-const AppContextProvider = props => {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [ready, setReady] = useState(false)
-  const [validationErrors, setValidationErrors] = useState({})
-  const [loginErrors, setLoginErrors] = useState({})
+const AppContextProvider = (props) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [ready, setReady] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
+  const [loginErrors, setLoginErrors] = useState({});
 
   const processError = (error, onError, formName) => {
     if (error instanceof ValidationError || error instanceof LoginError) {
-      setValidationErrors({ ...validationErrors, [formName]: error.errors })
+      setValidationErrors({ ...validationErrors, [formName]: error.errors });
     } else {
-      setError(error)
+      setError(error);
     }
-    if (onError) { onError(error) }
-  }
+    if (onError) {
+      onError(error);
+    }
+  };
 
   return (
-        <AppContext.Provider value={{
-          loading: loading,
-          setLoading: setLoading,
-          error: error,
-          setError: setError,
-          ready: ready,
-          setReady: setReady,
-          validationErrors: validationErrors,
-          setValidationErrors: setValidationErrors,
-          loginErrors: loginErrors,
-          setLoginErrors: setLoginErrors,
-          processError: processError
-        }}
-        >
-            {props.children}
-        </AppContext.Provider>
-  )
-}
-export { AppContext }
-export default AppContextProvider
+    <AppContext.Provider
+      value={{
+        loading,
+        setLoading,
+        error,
+        setError,
+        ready,
+        setReady,
+        validationErrors,
+        setValidationErrors,
+        loginErrors,
+        setLoginErrors,
+        processError,
+      }}
+    >
+      {props.children}
+    </AppContext.Provider>
+  );
+};
+export { AppContext };
+export default AppContextProvider;
