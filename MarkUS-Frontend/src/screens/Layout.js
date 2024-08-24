@@ -9,6 +9,7 @@ import MainStack from "./main/MainStack";
 import AuthStack from "./auth/AuthStack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import CalendarStack from "./calendar/CalendarStack";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function Layout() {
   const { getToken, signOut } = useContext(AuthorizationContext);
@@ -71,11 +72,40 @@ export default function Layout() {
       <NavigationContainer>
         <Tab.Navigator
           initialRouteName={"AuthStack"}
-          screenOptions={{ headerShown: false }}
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ color, size }) => {
+              const icons = {
+                MainStack: "notebook",
+                CalendarStack: "calendar",
+                AuthStack: "account",
+              };
+
+              return (
+                <MaterialCommunityIcons
+                  name={icons[route.name]}
+                  color={color}
+                  size={size}
+                />
+              );
+            },
+            headerShown: false,
+          })}
         >
-          <Tab.Screen name="MainStack" component={MainStack} />
-          <Tab.Screen name="CalendarStack" component={CalendarStack} />
-          <Tab.Screen name="AuthStack" component={AuthStack} />
+          <Tab.Screen
+            name="MainStack"
+            options={{ title: "Studies" }}
+            component={MainStack}
+          />
+          <Tab.Screen
+            name="CalendarStack"
+            options={{ title: "Calendar" }}
+            component={CalendarStack}
+          />
+          <Tab.Screen
+            name="AuthStack"
+            options={{ title: "Profile" }}
+            component={AuthStack}
+          />
         </Tab.Navigator>
         <FlashMessage position="top" />
       </NavigationContainer>
