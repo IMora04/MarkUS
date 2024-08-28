@@ -17,7 +17,14 @@ export default function AddButton(props) {
       ]}
       onPress={props.onCreate}
     >
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          width: 120,
+          justifyContent: "center",
+        }}
+      >
         <MaterialCommunityIcons name="plus" color={"white"} size={20} />
         <Text style={{ margin: 5, color: "white", fontSize: 15 }}>
           Add {props.name}

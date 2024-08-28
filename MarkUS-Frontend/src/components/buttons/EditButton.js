@@ -27,7 +27,7 @@ export default function EditButton(props) {
       >
         <MaterialCommunityIcons name={"pencil"} color={"white"} size={15} />
         <Text style={{ margin: 5, color: "white", fontSize: 15 }}>
-          {"Edit " + props.name}
+          Edit {props.name}
         </Text>
       </View>
     </Pressable>
