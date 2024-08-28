@@ -71,14 +71,14 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.container}>
             <InputItem
               name="email"
-              label="email:"
+              label="Email:"
               placeholder="customer1@customer.com"
               textContentType="emailAddress"
             />
 
             <InputItem
               name="password"
-              label="password:"
+              label="Password:"
               placeholder="secret"
               textContentType="password"
               secureTextEntry={true}
