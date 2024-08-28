@@ -50,12 +50,6 @@ module.exports = {
         },
         onDelete: 'cascade'
       },
-      avgMark: {
-        type: Sequelize.DOUBLE
-      },
-      officialMark: {
-        type: Sequelize.DOUBLE
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
