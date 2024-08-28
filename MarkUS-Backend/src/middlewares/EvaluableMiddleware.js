@@ -1,4 +1,4 @@
-import { EvaluableType, Subject } from '../models/models.js'
+import { Evaluable, EvaluableType, Subject } from '../models/models.js'
 
 const checkSubjectOwnership = async (req, res, next) => {
   try {
@@ -24,4 +24,16 @@ const checkEvaluableTypeOwnership = async (req, res, next) => {
   }
 }
 
-export { checkSubjectOwnership, checkEvaluableTypeOwnership }
+const checkEvaluableOwnership = async (req, res, next) => {
+  try {
+    const evaluable = await Evaluable.findByPk(req.params.evaluableId)
+    if (req.user.id === evaluable.userId) {
+      return next()
+    }
+    return res.status(403).send('Not enough privileges. This entity does not belong to you')
+  } catch (err) {
+    return res.status(500).send(err)
+  }
+}
+
+export { checkSubjectOwnership, checkEvaluableTypeOwnership, checkEvaluableOwnership }
