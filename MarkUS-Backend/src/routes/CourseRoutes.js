@@ -21,7 +21,6 @@ const loadFileRoutes = function (app) {
     .get(
       isLoggedIn,
       checkEntityExists(Course, 'courseId'),
-      CourseMiddleware.checkStudiesExistsAndOwnership,
       CourseMiddleware.checkCourseOwnership,
       CourseController.show
     )
