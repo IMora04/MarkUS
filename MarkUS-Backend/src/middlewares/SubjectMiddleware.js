@@ -1,4 +1,4 @@
-import { Subject } from '../models/models.js'
+import { Course, Subject } from '../models/models.js'
 
 const checkSubjectOwnership = async (req, res, next) => {
   try {
@@ -12,4 +12,16 @@ const checkSubjectOwnership = async (req, res, next) => {
   }
 }
 
-export { checkSubjectOwnership }
+const checkCourseOwnership = async (req, res, next) => {
+  try {
+    const course = await Course.findByPk(req.body.courseId)
+    if (req.user.id === course.userId) {
+      return next()
+    }
+    return res.status(403).send('Not enough privileges. This entity does not belong to you')
+  } catch (err) {
+    return res.status(500).send(err)
+  }
+}
+
+export { checkSubjectOwnership, checkCourseOwnership }

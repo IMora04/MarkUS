@@ -3,7 +3,6 @@ import { handleValidation } from '../middlewares/global/ValidationHandlingMiddle
 import { isLoggedIn } from '../middlewares/global/AuthMiddleware.js'
 import { checkEntityExists } from '../middlewares/global/EntityMiddleware.js'
 import SubjectController from '../controllers/SubjectController.js'
-import * as CourseMiddleware from '../middlewares/CourseMiddleware.js'
 import * as SubjectValidation from '../controllers/validation/SubjectValidation.js'
 import * as SubjectMiddleware from '../middlewares/SubjectMiddleware.js'
 
@@ -11,7 +10,7 @@ const loadFileRoutes = function (app) {
   app.route('/subjects')
     .post(
       isLoggedIn,
-      CourseMiddleware.checkCourseOwnership,
+      SubjectMiddleware.checkCourseOwnership,
       SubjectValidation.create,
       handleValidation,
       SubjectController.create
