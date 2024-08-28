@@ -6,7 +6,6 @@ import {
   StyleSheet,
   ScrollView,
   Switch,
-  Image,
   Dimensions,
   ActivityIndicator,
 } from "react-native";
@@ -20,8 +19,6 @@ import CreateModal from "../../components/modals/CreateModal";
 import { ErrorMessage, Formik } from "formik";
 import InputItem from "../../components/InputItem";
 import * as yup from "yup";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import * as ExpoImagePicker from "expo-image-picker";
 import StudiesCard from "../../components/StudiesCard";
 import DeleteModal from "../../components/modals/DeleteModal";
 import DoubleButtons from "../../components/buttons/DoubleButtons";
@@ -52,6 +49,7 @@ export default function StudiesScreen({ navigation, route }) {
     name: yup.string().max(255, "Name too long").required("Name is required"),
     credits: yup
       .number()
+      .typeError("The number of credits must be a number")
       .positive("The number of credits must be positive")
       .integer("The number of credits must be integer")
       .required("The number of credits is required"),
@@ -60,6 +58,7 @@ export default function StudiesScreen({ navigation, route }) {
     hasTrimesters: yup.boolean(),
     years: yup
       .number()
+      .typeError("The number of credits must be a number")
       .positive("The number of years must be positive")
       .integer("The number of years must be integer")
       .required("The number of years is required"),
@@ -82,6 +81,10 @@ export default function StudiesScreen({ navigation, route }) {
     );
     return () => subscription?.remove();
   });
+
+  useEffect(() => {
+    setBackendErrors([]);
+  }, [showCreateModal]);
 
   async function fetchStudies() {
     if (!isFocused) {
@@ -110,20 +113,6 @@ export default function StudiesScreen({ navigation, route }) {
     fetchStudies();
     setLoading(false);
   }, [isFocused, loggedInUser]);
-
-  const pickImage = async (onSuccess) => {
-    const result = await ExpoImagePicker.launchImageLibraryAsync({
-      mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      if (onSuccess) {
-        onSuccess(result);
-      }
-    }
-  };
 
   const createStudies = async (values) => {
     setBackendErrors([]);
@@ -342,49 +331,6 @@ export default function StudiesScreen({ navigation, route }) {
                           <Text>Trimesters</Text>
                         </View>
 
-                        <Pressable
-                          onPress={() =>
-                            pickImage(async (result) => {
-                              await setFieldValue("logo", result);
-                            })
-                          }
-                          style={{
-                            marginTop: 10,
-                            alignItems: "center",
-                            alignSelf: "center",
-                          }}
-                        >
-                          <Text>Click to browse logo: </Text>
-                          <Image
-                            style={styles.image}
-                            source={
-                              values.logo
-                                ? { uri: values.logo.assets[0].uri }
-                                : null
-                            }
-                          />
-                        </Pressable>
-
-                        <Pressable
-                          style={{
-                            alignSelf: "center",
-                            margin: 5,
-                            borderWidth: 1,
-                            borderRadius: 5,
-                            padding: 5,
-                            backgroundColor: GlobalStyles.brandBackground,
-                          }}
-                          onPress={async () => {
-                            await setFieldValue("logo", null);
-                          }}
-                        >
-                          <MaterialCommunityIcons
-                            name="delete"
-                            color={"black"}
-                            size={20}
-                          />
-                        </Pressable>
-
                         {backendErrors &&
                           backendErrors.map((error, index) => (
                             <Text key={index} style={{ color: "red" }}>
@@ -438,28 +384,3 @@ export default function StudiesScreen({ navigation, route }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  image: {
-    width: 100,
-    height: 100,
-    borderWidth: 1,
-    alignSelf: "center",
-    marginTop: 5,
-  },
-  actionButton: {
-    borderRadius: 8,
-    height: 40,
-    margin: 8,
-    padding: 10,
-    alignSelf: "center",
-    flexDirection: "column",
-    width: "50%",
-  },
-  text: {
-    fontSize: 16,
-    color: "white",
-    alignSelf: "center",
-    marginLeft: 5,
-  },
-});
