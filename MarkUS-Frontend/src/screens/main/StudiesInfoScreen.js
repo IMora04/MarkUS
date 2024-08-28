@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { AuthorizationContext } from "../../context/AuthorizationContext";
 import { getAll, getDetail } from "../../api/StudiesEndpoints";
-import { create } from "../../api/CourseEndpoints";
+import { create, update } from "../../api/CourseEndpoints";
 import { showMessage } from "react-native-flash-message";
 import * as GlobalStyles from "../../styles/GlobalStyles";
 import { useIsFocused } from "@react-navigation/native";
@@ -19,7 +19,6 @@ import { FlatList } from "react-native-gesture-handler";
 import { ProgressCircle } from "react-native-svg-charts";
 import CreateModal from "../../components/modals/CreateModal";
 import { Formik } from "formik";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import InputItem from "../../components/InputItem";
 import * as yup from "yup";
 import AddButton from "../../components/buttons/AddButton";
@@ -27,6 +26,8 @@ import TopSubjects from "../../components/TopSubjects";
 import RNPickerSelect from "react-native-picker-select";
 import CancelButton from "../../components/buttons/CancelButton";
 import { StudiesContext } from "../../context/StudiesContext";
+import EditClickable from "../../components/EditClickable";
+import CreateEditButton from "../../components/buttons/CreateEditButton";
 
 export default function StudiesInfoScreen({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext);
@@ -36,14 +37,25 @@ export default function StudiesInfoScreen({ navigation, route }) {
   const [backendErrors, setBackendErrors] = useState();
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(route.params.id);
+  const [editingCourse, setEditingCourse] = useState(null);
 
-  const availableCredits =
-    currentStudies.credits -
-    currentStudies.courses
-      ?.map((c) => c.credits)
-      .reduce((acc, cv) => acc + cv, 0);
+  const editing = editingCourse !== null;
 
-  const initialValues = { credits: null, number: null };
+  const availableCredits = editing
+    ? currentStudies.credits -
+      currentStudies.courses
+        ?.map((c) => c.credits)
+        .reduce((acc, cv) => acc + cv, 0) +
+      editingCourse.credits
+    : currentStudies.credits -
+      currentStudies.courses
+        ?.map((c) => c.credits)
+        .reduce((acc, cv) => acc + cv, 0);
+
+  const [initialValues, setInitialValues] = useState({
+    credits: null,
+    number: null,
+  });
   const validationSchema = yup.object().shape({
     number: yup
       .number()
@@ -105,6 +117,15 @@ export default function StudiesInfoScreen({ navigation, route }) {
 
   useEffect(() => {
     setBackendErrors([]);
+    if (!showModal) {
+      setInitialValues({
+        credits: null,
+        number: null,
+      });
+      setTimeout(() => {
+        setEditingCourse(null);
+      }, 200);
+    }
   }, [showModal]);
 
   async function fetchOneStudies(id) {
@@ -219,7 +240,21 @@ export default function StudiesInfoScreen({ navigation, route }) {
             navigation.navigate("Course info", { id: item.id });
           }}
         >
-          <Text>{courseMapper[item.number]} course</Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ flex: 1 }}>{courseMapper[item.number]} course</Text>
+            <Pressable
+              onPress={() => {
+                setInitialValues({
+                  credits: item.credits,
+                  number: item.number,
+                });
+                setShowModal(true);
+                setEditingCourse(item);
+              }}
+            >
+              <EditClickable hideText={true} />
+            </Pressable>
+          </View>
         </Pressable>
       </View>
     );
@@ -430,6 +465,24 @@ export default function StudiesInfoScreen({ navigation, route }) {
     }
   };
 
+  const updateCourse = async (values) => {
+    setBackendErrors([]);
+    try {
+      values.studiesId = editingCourse.studiesId;
+      const updatedCourse = await update(editingCourse.id, values);
+      showMessage({
+        message: `${courseMapper[updatedCourse.number]} course succesfully updated`,
+        type: "success",
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle,
+      });
+      setShowModal(false);
+      await fetchOneStudies(route.params.id);
+    } catch (error) {
+      setBackendErrors(error.errors);
+    }
+  };
+
   return loading ? (
     <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
       <ActivityIndicator />
@@ -450,7 +503,6 @@ export default function StudiesInfoScreen({ navigation, route }) {
           isVisible={showModal}
           onCancel={() => {
             setShowModal(false);
-            setBackendErrors();
           }}
         >
           <View
@@ -467,7 +519,7 @@ export default function StudiesInfoScreen({ navigation, route }) {
             <Formik
               validationSchema={validationSchema}
               initialValues={initialValues}
-              onSubmit={createCourse}
+              onSubmit={editing ? updateCourse : createCourse}
             >
               {({ handleSubmit, setFieldValue, values }) => (
                 <>
@@ -483,34 +535,7 @@ export default function StudiesInfoScreen({ navigation, route }) {
                       </Text>
                     ))}
 
-                  <Pressable
-                    onPress={handleSubmit}
-                    style={({ pressed }) => [
-                      {
-                        backgroundColor: pressed
-                          ? GlobalStyles.appGreenTap
-                          : GlobalStyles.appGreen,
-                      },
-                      styles.actionButton,
-                    ]}
-                  >
-                    <View
-                      style={[
-                        {
-                          flex: 1,
-                          flexDirection: "row",
-                          justifyContent: "center",
-                        },
-                      ]}
-                    >
-                      <MaterialCommunityIcons
-                        name={"check"}
-                        color={"white"}
-                        size={20}
-                      />
-                      <Text style={styles.text}>Create</Text>
-                    </View>
-                  </Pressable>
+                  <CreateEditButton editing={editing} onSubmit={handleSubmit} />
 
                   <CancelButton
                     onCancel={() => {

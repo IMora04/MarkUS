@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, View, Text, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as GlobalStyles from "../styles/GlobalStyles";
+import EditClickable from "./EditClickable";
 
 export default function StudiesCard(props) {
   return (
@@ -50,22 +51,7 @@ export default function StudiesCard(props) {
             <Text style={{ fontSize: 15 }}>{props.item.credits} credits</Text>
             <Text style={{ fontSize: 15 }}>Currently {props.item.status}</Text>
           </View>
-          {props.editing && (
-            <View
-              style={{ flexDirection: "row", width: 55, alignItems: "center" }}
-            >
-              <MaterialCommunityIcons
-                name="pencil"
-                color={GlobalStyles.appBlue}
-                size={20}
-              />
-              <Text
-                style={{ marginHorizontal: 5, color: GlobalStyles.appBlue }}
-              >
-                Edit
-              </Text>
-            </View>
-          )}
+          {props.editing && <EditClickable />}
         </View>
       </Pressable>
     </View>
