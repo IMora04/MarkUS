@@ -41,10 +41,21 @@ const destroy = async function (req, res) {
     res.status(500).send(err)
   }
 }
+
+const update = async (req, res) => {
+  try {
+    await Course.update(req.body, { where: {id: req.params.courseId} })
+    const updatedCourse = await Course.findByPk(req.params.courseId)
+    res.json(updatedCourse)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
   
 const CourseController = {
   show,
   create,
+  update,
   destroy
 }
 export default CourseController

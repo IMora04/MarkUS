@@ -23,6 +23,14 @@ const loadFileRoutes = function (app) {
       CourseMiddleware.checkCourseOwnership,
       CourseController.show
     )
+    .put(
+      isLoggedIn,
+      checkEntityExists(Course, 'courseId'),
+      CourseMiddleware.checkCourseOwnership,
+      CourseValidation.update,
+      handleValidation,
+      CourseController.update
+    )
     .delete(
       isLoggedIn,
       checkEntityExists(Course, 'courseId'),
