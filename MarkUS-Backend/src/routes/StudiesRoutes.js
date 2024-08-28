@@ -1,13 +1,12 @@
-//import * as StudiesValidation from '../controllers/validation/StudiesValidation.js'
+import * as StudiesValidation from '../controllers/validation/StudiesValidation.js'
 import StudiesController from '../controllers/StudiesController.js'
 import { Studies } from '../models/models.js'
 import { handleValidation } from '../middlewares/ValidationHandlingMiddleware.js'
 import { isLoggedIn } from '../middlewares/AuthMiddleware.js'
 import { checkEntityExists } from '../middlewares/EntityMiddleware.js'
-import { handleFilesUpload } from '../middlewares/FileHandlerMiddleware.js'
+import * as StudiesMiddleware from '../middlewares/StudiesMiddleware.js'
 
 const loadFileRoutes = function (app) {
-  //TODO: All
   app.route('/studies')
     .get(
       isLoggedIn,
@@ -15,27 +14,30 @@ const loadFileRoutes = function (app) {
     )
     .post(
       isLoggedIn,
+      StudiesValidation.create,
+      handleValidation,
       StudiesController.create
     )
     
-  //TODO: All
   app.route('/studies/:studiesId')
     .get(
       isLoggedIn,
       checkEntityExists(Studies, 'studiesId'),
-      //StudiesMiddleware.checkStudiesOwnership,
+      StudiesMiddleware.checkStudiesOwnership,
       StudiesController.show
     )
     .put(
       isLoggedIn,
       checkEntityExists(Studies, 'studiesId'),
-      //StudiesMiddleware.checkStudiesOwnership,
+      StudiesMiddleware.checkStudiesOwnership,
+      StudiesValidation.update,
+      handleValidation,
       StudiesController.update
     )
     .delete(
       isLoggedIn,
       checkEntityExists(Studies, 'studiesId'),
-      //StudiesMiddleware.checkStudiesOwnership,
+      StudiesMiddleware.checkStudiesOwnership,
       StudiesController.destroy
     )
 }
