@@ -48,8 +48,8 @@ module.exports = {
         type: Sequelize.DOUBLE,
         allowNull: true
       },
-      weight: Sequelize.INTEGER,  
-        createdAt: {
+      weight: Sequelize.DOUBLE,  
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: new Date()
