@@ -1,16 +1,19 @@
-//import * as StudiesValidation from '../controllers/validation/StudiesValidation.js'
 import { Subject } from '../models/models.js'
 import { handleValidation } from '../middlewares/ValidationHandlingMiddleware.js'
 import { isLoggedIn } from '../middlewares/AuthMiddleware.js'
 import { checkEntityExists } from '../middlewares/EntityMiddleware.js'
-import { handleFilesUpload } from '../middlewares/FileHandlerMiddleware.js'
 import SubjectController from '../controllers/SubjectController.js'
+import * as CourseMiddleware from '../middlewares/CourseMiddleware.js'
+import * as SubjectValidation from '../controllers/validation/SubjectValidation.js'
+import * as SubjectMiddleware from '../middlewares/SubjectMiddleware.js'
 
 const loadFileRoutes = function (app) {
-  //TODO: All
   app.route('/subjects')
     .post(
       isLoggedIn,
+      CourseMiddleware.checkCourseOwnership,
+      SubjectValidation.create,
+      handleValidation,
       SubjectController.create
     )
 
@@ -18,13 +21,13 @@ const loadFileRoutes = function (app) {
     .get(
       isLoggedIn,
       checkEntityExists(Subject, 'subjectId'),
-      //SubjectMiddleware.checkSubjectOwnership,
+      SubjectMiddleware.checkSubjectOwnership,
       SubjectController.show
     )
     .delete(
       isLoggedIn,
       checkEntityExists(Subject, 'subjectId'),
-      //StudiesMiddleware.checkStudiesOwnership,
+      SubjectMiddleware.checkSubjectOwnership,
       SubjectController.destroy
     )
 }
