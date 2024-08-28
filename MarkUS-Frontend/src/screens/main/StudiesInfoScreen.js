@@ -37,17 +37,33 @@ export default function StudiesInfoScreen({ navigation, route }) {
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(route.params.id);
 
+  const availableCredits =
+    currentStudies.credits -
+    currentStudies.courses
+      ?.map((c) => c.credits)
+      .reduce((acc, cv) => acc + cv, 0);
+
   const initialValues = { credits: null, number: null };
   const validationSchema = yup.object().shape({
     number: yup
       .number()
+      .typeError("The course year must be a number")
       .positive("The course year must be positive")
       .integer("The course year must be integer")
+      .max(
+        currentStudies.years,
+        "The course year must be between 1 and " + currentStudies.years,
+      )
       .required("The course year is required"),
     credits: yup
       .number()
+      .typeError("The number of credits must be a number")
       .positive("The number of credits must be positive")
       .integer("The number of credits must be integer")
+      .max(
+        availableCredits,
+        "The number of credits must be between 1 and " + availableCredits,
+      )
       .required("The number of credits is required"),
   });
 
@@ -86,6 +102,10 @@ export default function StudiesInfoScreen({ navigation, route }) {
       fetchOneStudies(route.params.id);
     }
   }, [route]);
+
+  useEffect(() => {
+    setBackendErrors([]);
+  }, [showModal]);
 
   async function fetchOneStudies(id) {
     try {
