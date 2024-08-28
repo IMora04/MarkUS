@@ -3,7 +3,6 @@ import {
   Pressable,
   Text,
   View,
-  StyleSheet,
   ScrollView,
   Switch,
   Dimensions,
@@ -340,7 +339,10 @@ export default function StudiesScreen({ navigation, route }) {
                       </View>
                     </ScrollView>
 
-                    <CreateEditButton onSubmit={handleSubmit} />
+                    <CreateEditButton
+                      editing={editing}
+                      onSubmit={handleSubmit}
+                    />
 
                     <CancelButton onCancel={() => setShowCreateModal(false)} />
                   </>

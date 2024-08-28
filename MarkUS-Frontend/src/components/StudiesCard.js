@@ -51,17 +51,19 @@ export default function StudiesCard(props) {
             <Text style={{ fontSize: 15 }}>Currently {props.item.status}</Text>
           </View>
           {props.editing && (
-            <View style={{ flexDirection: "row", width: 55 }}>
+            <View
+              style={{ flexDirection: "row", width: 55, alignItems: "center" }}
+            >
+              <MaterialCommunityIcons
+                name="pencil"
+                color={GlobalStyles.appBlue}
+                size={20}
+              />
               <Text
                 style={{ marginHorizontal: 5, color: GlobalStyles.appBlue }}
               >
                 Edit
               </Text>
-              <MaterialCommunityIcons
-                name="arrow-right"
-                color={GlobalStyles.appBlue}
-                size={20}
-              />
             </View>
           )}
         </View>
