@@ -1,4 +1,4 @@
-import { Course } from '../models/models.js'
+import { Course, Studies } from '../models/models.js'
 import { handleValidation } from '../middlewares/ValidationHandlingMiddleware.js'
 import { isLoggedIn } from '../middlewares/AuthMiddleware.js'
 import { checkEntityExists } from '../middlewares/EntityMiddleware.js'
