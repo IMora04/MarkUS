@@ -1,6 +1,6 @@
-import { isLoggedIn } from '../middlewares/AuthMiddleware.js'
+import { isLoggedIn } from '../middlewares/global/AuthMiddleware.js'
 import EvaluableController from '../controllers/EvaluableController.js'
-import { handleValidation } from '../middlewares/ValidationHandlingMiddleware.js'
+import { handleValidation } from '../middlewares/global/ValidationHandlingMiddleware.js'
 import * as EvaluableValidation from '../controllers/validation/EvaluableValidation.js'
 
 const loadFileRoutes = function (app) {

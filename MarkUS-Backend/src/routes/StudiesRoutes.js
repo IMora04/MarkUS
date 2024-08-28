@@ -1,9 +1,9 @@
 import * as StudiesValidation from '../controllers/validation/StudiesValidation.js'
 import StudiesController from '../controllers/StudiesController.js'
 import { Studies } from '../models/models.js'
-import { handleValidation } from '../middlewares/ValidationHandlingMiddleware.js'
-import { isLoggedIn } from '../middlewares/AuthMiddleware.js'
-import { checkEntityExists } from '../middlewares/EntityMiddleware.js'
+import { handleValidation } from '../middlewares/global/ValidationHandlingMiddleware.js'
+import { isLoggedIn } from '../middlewares/global/AuthMiddleware.js'
+import { checkEntityExists } from '../middlewares/global/EntityMiddleware.js'
 import * as StudiesMiddleware from '../middlewares/StudiesMiddleware.js'
 
 const loadFileRoutes = function (app) {

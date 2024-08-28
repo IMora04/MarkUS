@@ -1,10 +1,10 @@
 import * as UserValidation from '../controllers/validation/UserValidation.js'
 import UserController from '../controllers/UserController.js'
 import { User } from '../models/models.js'
-import { handleValidation } from '../middlewares/ValidationHandlingMiddleware.js'
-import { isLoggedIn } from '../middlewares/AuthMiddleware.js'
-import { checkEntityExists } from '../middlewares/EntityMiddleware.js'
-import { handleFilesUpload } from '../middlewares/FileHandlerMiddleware.js'
+import { handleValidation } from '../middlewares/global/ValidationHandlingMiddleware.js'
+import { isLoggedIn } from '../middlewares/global/AuthMiddleware.js'
+import { checkEntityExists } from '../middlewares/global/EntityMiddleware.js'
+import { handleFilesUpload } from '../middlewares/global/FileHandlerMiddleware.js'
 
 const loadFileRoutes = function (app) {
   app.route('/users')
