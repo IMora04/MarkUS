@@ -5,14 +5,12 @@ import { checkEntityExists } from '../middlewares/EntityMiddleware.js'
 import CourseController from '../controllers/CourseController.js'
 import * as CourseValidation from '../controllers/validation/CourseValidation.js'
 import * as CourseMiddleware from '../middlewares/CourseMiddleware.js'
-import * as StudiesMiddleware from '../middlewares/StudiesMiddleware.js'
 
 const loadFileRoutes = function (app) {
   app.route('/courses')
   .post(
     isLoggedIn,
-    checkEntityExists(Studies, 'studiesId'),
-    StudiesMiddleware.checkStudiesOwnership,
+    CourseMiddleware.checkStudiesOwnership,
     CourseValidation.create,
     handleValidation,
     CourseController.create
