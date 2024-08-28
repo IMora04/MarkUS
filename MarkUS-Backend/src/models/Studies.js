@@ -22,7 +22,6 @@ const loadModel = (sequelize, DataTypes) => {
     },
     credits: DataTypes.INTEGER,
     description: DataTypes.TEXT,
-    logo: DataTypes.STRING,
     hasTrimesters: DataTypes.BOOLEAN,
     status: {
       allowNull: false,

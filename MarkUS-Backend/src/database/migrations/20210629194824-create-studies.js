@@ -17,9 +17,6 @@ module.exports = {
       description: {
         type: Sequelize.TEXT
       },
-      logo: {
-        type: Sequelize.STRING
-      },
       hasTrimesters: {
         type: Sequelize.BOOLEAN
       },
