@@ -6,7 +6,7 @@ import * as GlobalStyles from "../styles/GlobalStyles";
 export default function TopSubjects(props) {
   return (
     <>
-      {props.topSubjects?.length === 0 ? (
+      {props.topSubjects?.length < 5 ? (
         <View style={{ marginTop: 20 }}>
           <Text style={{ textAlign: "center" }}>
             Start adding subjects to see the top 5 subjects
