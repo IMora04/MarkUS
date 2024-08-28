@@ -11,24 +11,24 @@ const loadFileRoutes = function (app) {
   app.route('/courses')
   .post(
     isLoggedIn,
-    CourseMiddleware.checkStudiesExists,
+    CourseMiddleware.checkStudiesExistsAndOwnership,
     CourseValidation.create,
     handleValidation,
     CourseController.create
   )
   
-  //TODO: All
   app.route('/courses/:courseId')
     .get(
       isLoggedIn,
       checkEntityExists(Course, 'courseId'),
-      //CourseMiddleware.checkCourseOwnership,
+      CourseMiddleware.checkStudiesExistsAndOwnership,
+      CourseMiddleware.checkCourseOwnership,
       CourseController.show
     )
     .delete(
       isLoggedIn,
       checkEntityExists(Course, 'courseId'),
-      //CourseMiddleware.checkCourseOwnership,
+      CourseMiddleware.checkCourseOwnership,
       CourseController.destroy
     )
 
