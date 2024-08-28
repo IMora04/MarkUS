@@ -1,35 +1,15 @@
 import React from "react";
-import { Pressable, View, Text, StyleSheet } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Pressable, View, Text } from "react-native";
 import * as GlobalStyles from "../styles/GlobalStyles";
 import EditClickable from "./EditClickable";
+import AppCard from "./AppCard";
 
 export default function StudiesCard(props) {
   return (
-    <View style={styles.studiesCard}>
-      {props.editing && (
-        <Pressable
-          style={({ pressed }) => [
-            {
-              backgroundColor: pressed
-                ? GlobalStyles.appRedTap
-                : GlobalStyles.appRed,
-            },
-            styles.deleteBox,
-          ]}
-          onPress={props.onDelete}
-        >
-          <MaterialCommunityIcons
-            name="delete-outline"
-            color={"white"}
-            size={20}
-          />
-        </Pressable>
-      )}
+    <AppCard editing={props.editing} onDelete={props.onDelete}>
       <Pressable
         style={({ pressed }) => [
           {
-            padding: 10,
             flex: 1,
             borderRadius: 15,
             backgroundColor: pressed ? GlobalStyles.appWhiteTap : "white",
@@ -54,24 +34,6 @@ export default function StudiesCard(props) {
           {props.editing && <EditClickable />}
         </View>
       </Pressable>
-    </View>
+    </AppCard>
   );
 }
-
-const styles = StyleSheet.create({
-  studiesCard: {
-    borderRadius: 15,
-    backgroundColor: "white",
-    marginVertical: 5,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  deleteBox: {
-    borderRadius: 15,
-    height: 30,
-    width: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 10,
-  },
-});
