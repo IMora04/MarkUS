@@ -309,14 +309,10 @@ export default function StudiesScreen({ navigation, route }) {
                           <Text>Semesters</Text>
                           <Switch
                             trackColor={{
-                              false: GlobalStyles.brandSecondary,
-                              true: GlobalStyles.brandPrimary,
+                              false: GlobalStyles.appOrangeTap,
+                              true: GlobalStyles.appOrangeTap,
                             }}
-                            thumbColor={
-                              values.hasTrimesters
-                                ? GlobalStyles.brandSecondary
-                                : "#f4f3f4"
-                            }
+                            thumbColor={GlobalStyles.appWhiteTap}
                             value={values.hasTrimesters}
                             style={{ marginHorizontal: 5 }}
                             onValueChange={(value) =>

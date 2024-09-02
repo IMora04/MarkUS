@@ -30,54 +30,57 @@ export default function DeleteModal(props) {
       visible={props.isVisible}
       onRequestClose={props.onCancel}
     >
-      {props.isVisible && (
-        <BlurView
-          style={styles.absolute}
-          tint="light"
-          intensity={10}
-          experimentalBlurMethod="dimezisBlurView"
-        />
-      )}
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text style={[styles.text, { fontWeight: 600, fontSize: 20 }]}>
-            Delete {props.name}
-          </Text>
-          <View>
-            <Text style={styles.text}>
-              {"\n"}Are you sure you want to delete this {props.name}?
+      <BlurView
+        style={styles.absolute}
+        tint="light"
+        intensity={10}
+        experimentalBlurMethod="dimezisBlurView"
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={[styles.text, { fontWeight: 600, fontSize: 20 }]}>
+              Delete {props.name}
             </Text>
-            <Text style={styles.text}>
-              {"\n"}
-              {deleteText}
-            </Text>
-          </View>
+            <View>
+              <Text style={styles.text}>
+                {"\n"}Are you sure you want to delete this {props.name}?
+              </Text>
+              <Text style={styles.text}>
+                {"\n"}
+                {deleteText}
+              </Text>
+            </View>
 
-          <Pressable
-            onPress={props.onConfirm}
-            style={({ pressed }) => [
-              {
-                backgroundColor: pressed
-                  ? GlobalStyles.appRedTap
-                  : GlobalStyles.appRed,
-                marginTop: 35,
-              },
-              styles.actionButton,
-            ]}
-          >
-            <View
-              style={[
-                { flex: 1, flexDirection: "row", justifyContent: "center" },
+            <Pressable
+              onPress={props.onConfirm}
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed
+                    ? GlobalStyles.appRedTap
+                    : GlobalStyles.appRed,
+                  marginTop: 35,
+                },
+                styles.actionButton,
               ]}
             >
-              <MaterialCommunityIcons name="delete" color={"white"} size={20} />
-              <Text style={[styles.text, { color: "white" }]}>Delete</Text>
-            </View>
-          </Pressable>
+              <View
+                style={[
+                  { flex: 1, flexDirection: "row", justifyContent: "center" },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="delete"
+                  color={"white"}
+                  size={20}
+                />
+                <Text style={[styles.text, { color: "white" }]}>Delete</Text>
+              </View>
+            </Pressable>
 
-          <CancelButton onCancel={props.onCancel} />
+            <CancelButton onCancel={props.onCancel} />
+          </View>
         </View>
-      </View>
+      </BlurView>
     </Modal>
   );
 }
@@ -121,9 +124,9 @@ const styles = StyleSheet.create({
   },
   absolute: {
     position: "absolute",
-    top: -20,
-    left: -20,
-    bottom: -20,
-    right: -20,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
 });
