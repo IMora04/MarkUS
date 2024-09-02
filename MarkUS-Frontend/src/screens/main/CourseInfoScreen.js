@@ -230,8 +230,14 @@ export default function CourseInfoScreen({ navigation, route }) {
         </Text>
       </View>
 
-      <ScrollView>
-        <View style={{ minHeight: dimensions.window.height * 0.65 }}>
+      <ScrollView
+        contentContainerStyle={{
+          flexDirection: "column",
+          justifyContent: "space-between",
+          flexGrow: 1,
+        }}
+      >
+        <View>
           {currentCourse.subjects && currentCourse.subjects.length !== 0 ? (
             <View>
               <FlatList
@@ -289,10 +295,12 @@ export default function CourseInfoScreen({ navigation, route }) {
           />
         </View>
 
-        <DeleteButton
-          name={"course"}
-          onDelete={() => setShowDeleteModal(true)}
-        />
+        <View>
+          <DeleteButton
+            name={"course"}
+            onDelete={() => setShowDeleteModal(true)}
+          />
+        </View>
       </ScrollView>
 
       <DeleteModal

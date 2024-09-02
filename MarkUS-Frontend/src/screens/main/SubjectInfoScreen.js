@@ -233,7 +233,7 @@ export default function CourseInfoScreen({ navigation, route }) {
     }
   };
 
-  const renderAddButton = () => {
+  const renderDoubleButtons = () => {
     if (
       (currentSubject.evaluables || [])
         .flatMap((e) => e.weight)
@@ -309,32 +309,32 @@ export default function CourseInfoScreen({ navigation, route }) {
       <ActivityIndicator />
     </View>
   ) : (
-    <View style={{ padding: 20 }}>
-      <Text
-        style={{
-          textAlign: "center",
-          fontWeight: 600,
-          fontSize: 20,
-          marginBottom: 15,
-        }}
-      >
-        {currentSubject.name}
-      </Text>
+    <View style={{ padding: 20, flex: 1 }}>
       <ScrollView>
+        <Text
+          style={{
+            textAlign: "center",
+            fontWeight: 600,
+            fontSize: 20,
+            marginBottom: 15,
+          }}
+        >
+          {currentSubject.name}
+        </Text>
+
         <FlatList
           scrollEnabled={false}
           data={usedEvaluableTypes}
           renderItem={renderEvaluableType}
           ListEmptyComponent={renderEmptyList}
-          contentContainerStyle={{ minHeight: dimensions.window.height * 0.65 }}
-          ListFooterComponent={renderAddButton}
+          ListFooterComponent={renderDoubleButtons}
         />
-
         <DeleteButton
           name={"subject"}
           onDelete={() => setShowDeleteSubjectModal(true)}
         />
       </ScrollView>
+
       <DeleteModal
         isVisible={showDeleteSubjectModal}
         onCancel={() => setShowDeleteSubjectModal(false)}
@@ -424,24 +424,6 @@ export default function CourseInfoScreen({ navigation, route }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  actionButton: {
-    borderRadius: 8,
-    height: 40,
-    margin: 8,
-    padding: 10,
-    alignSelf: "center",
-    flexDirection: "column",
-    width: "50%",
-  },
-  text: {
-    fontSize: 16,
-    color: "white",
-    alignSelf: "center",
-    marginLeft: 5,
-  },
-});
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
