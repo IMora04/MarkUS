@@ -12,26 +12,29 @@ export default function CreateModal(props) {
       visible={props.isVisible}
       onRequestClose={props.onCancel}
     >
-      {props.isVisible && (
-        <BlurView
-          style={styles.absolute}
-          tint="light"
-          intensity={10}
-          experimentalBlurMethod="dimezisBlurView"
-        />
-      )}
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Pressable
-            style={{ marginTop: -21, alignSelf: "flex-end", marginRight: -22 }}
-            onPress={props.onCancel}
-          >
-            <MaterialCommunityIcons name="close" color={"black"} size={20} />
-          </Pressable>
+      <BlurView
+        style={styles.absolute}
+        tint="light"
+        intensity={10}
+        experimentalBlurMethod="dimezisBlurView"
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Pressable
+              style={{
+                marginTop: -21,
+                alignSelf: "flex-end",
+                marginRight: -22,
+              }}
+              onPress={props.onCancel}
+            >
+              <MaterialCommunityIcons name="close" color={"black"} size={20} />
+            </Pressable>
 
-          {props.children}
+            {props.children}
+          </View>
         </View>
-      </View>
+      </BlurView>
     </Modal>
   );
 }
@@ -75,9 +78,9 @@ const styles = StyleSheet.create({
   },
   absolute: {
     position: "absolute",
-    top: -20,
-    left: -20,
-    bottom: -20,
-    right: -20,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
 });

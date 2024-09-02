@@ -4,7 +4,7 @@ import * as GlobalStyles from "../../styles/GlobalStyles";
 
 export default function DeleteButton(props) {
   return (
-    <View style={{ marginTop: 40 }}>
+    <View style={{ marginTop: 30 }}>
       <Pressable onPress={props.onDelete}>
         <Text style={{ color: GlobalStyles.appRed, textAlign: "center" }}>
           Delete this {props.name}

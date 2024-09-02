@@ -17,7 +17,14 @@ export default function CancelButton(props) {
       ]}
     >
       <View
-        style={[{ flex: 1, flexDirection: "row", justifyContent: "center" }]}
+        style={[
+          {
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          },
+        ]}
       >
         <Text style={styles.text}>Cancel</Text>
       </View>
@@ -29,10 +36,8 @@ const styles = StyleSheet.create({
   actionButton: {
     borderRadius: 8,
     height: 40,
-    margin: 8,
-    padding: 10,
-    alignSelf: "center",
     flexDirection: "column",
+    alignSelf: "center",
     width: "50%",
   },
   text: {
