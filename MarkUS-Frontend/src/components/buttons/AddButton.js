@@ -12,6 +12,7 @@ export default function AddButton(props) {
           backgroundColor: pressed
             ? GlobalStyles.appGreenTap
             : GlobalStyles.appGreen,
+          alignItems: "center",
         },
         props.style,
       ]}

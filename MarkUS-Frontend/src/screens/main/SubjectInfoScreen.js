@@ -8,7 +8,7 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, TextInput } from "react-native-gesture-handler";
 import * as GlobalStyles from "../../styles/GlobalStyles";
 import { showMessage } from "react-native-flash-message";
 import * as SubjectEndpoints from "../../api/SubjectEndpoints";
@@ -21,12 +21,13 @@ import { StudiesContext } from "../../context/StudiesContext";
 import CreateModal from "../../components/modals/CreateModal";
 import CancelButton from "../../components/buttons/CancelButton";
 import InputItem from "../../components/InputItem";
-import { Formik } from "formik";
+import { ErrorMessage, Formik } from "formik";
 import RNPickerSelect from "react-native-picker-select";
 import DoubleButtons from "../../components/buttons/DoubleButtons";
 import AppCard from "../../components/AppCard";
 import EditClickable from "../../components/EditClickable";
 import CreateEditButton from "../../components/buttons/CreateEditButton";
+import AddButton from "../../components/buttons/AddButton";
 
 export default function CourseInfoScreen({ navigation, route }) {
   const [backendErrors, setBackendErrors] = useState();
@@ -45,6 +46,7 @@ export default function CourseInfoScreen({ navigation, route }) {
     mark: null,
   });
   const [editingId, setEditingId] = useState(null);
+  const [newType, setNewType] = useState(null);
 
   const editing = editingId !== null;
 
@@ -99,6 +101,20 @@ export default function CourseInfoScreen({ navigation, route }) {
     try {
       const fetchedSubject = await SubjectEndpoints.getDetail(id);
       setCurrentSubject(fetchedSubject);
+      await fetchEvaluableTypes();
+      setLoading(false);
+    } catch (error) {
+      showMessage({
+        message: `There was an error while retrieving this subject. ${error} `,
+        type: "error",
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle,
+      });
+    }
+  }
+
+  async function fetchEvaluableTypes() {
+    try {
       const fetchedEvaluableTypes = await EvaluableEndpoints.getAll();
       const reshapedEvaluables = fetchedEvaluableTypes.map((e) => {
         return {
@@ -107,10 +123,9 @@ export default function CourseInfoScreen({ navigation, route }) {
         };
       });
       setEvaluableTypes(reshapedEvaluables);
-      setLoading(false);
     } catch (error) {
       showMessage({
-        message: `There was an error while retrieving this subject. ${error} `,
+        message: `There was an error while retrieving evaluable types. ${error} `,
         type: "error",
         style: GlobalStyles.flashStyle,
         titleStyle: GlobalStyles.flashTextStyle,
@@ -303,6 +318,16 @@ export default function CourseInfoScreen({ navigation, route }) {
     }
   };
 
+  const createEvaluableType = async (values) => {
+    setBackendErrors([]);
+    try {
+      await EvaluableEndpoints.createType(values);
+      await fetchEvaluableTypes();
+    } catch (error) {
+      setBackendErrors(error.errors);
+    }
+  };
+
   return loading ? (
     <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
       <ActivityIndicator />
@@ -358,6 +383,7 @@ export default function CourseInfoScreen({ navigation, route }) {
         onCancel={() => {
           setShowCreateModal(false);
           setBackendErrors();
+          setNewType(null);
         }}
       >
         <View
@@ -392,19 +418,70 @@ export default function CourseInfoScreen({ navigation, route }) {
                   >
                     Evaluable type:
                   </Text>
-                  <View>
-                    <RNPickerSelect
-                      placeholder={{
-                        label: "Select evaluable type...",
-                        value: null,
-                      }}
-                      onValueChange={(value) => {
-                        setFieldValue("evaluableTypeId", value);
-                      }}
-                      style={pickerSelectStyles}
-                      items={evaluableTypes}
-                    />
-                  </View>
+                  {newType !== null ? (
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <TextInput
+                        placeholder="Introduce new type name..."
+                        onChangeText={(newTypeName) => {
+                          setNewType(newTypeName);
+                        }}
+                        style={{
+                          borderRadius: 8,
+                          height: 40,
+                          borderWidth: 1,
+                          padding: 10,
+                          marginVertical: 7,
+                          flex: 1,
+                        }}
+                      />
+                      <View>
+                        <AddButton
+                          name={"type"}
+                          onCreate={async () => {
+                            await createEvaluableType({
+                              name: newType,
+                            });
+                            await fetchEvaluableTypes();
+                            setNewType(null);
+                          }}
+                        />
+                      </View>
+                    </View>
+                  ) : (
+                    <>
+                      <View>
+                        <RNPickerSelect
+                          placeholder={{
+                            label: "Select evaluable type...",
+                            value: null,
+                          }}
+                          onValueChange={(value) => {
+                            setFieldValue("evaluableTypeId", value);
+                          }}
+                          style={pickerSelectStyles}
+                          items={evaluableTypes}
+                        />
+                        <ErrorMessage
+                          name={"evaluableTypeId"}
+                          render={(msg) => <Text>{msg}</Text>}
+                        />
+                      </View>
+                    </>
+                  )}
+                  <Pressable
+                    style={{ alignItems: "center" }}
+                    onPress={
+                      newType === null
+                        ? () => setNewType("")
+                        : () => setNewType(null)
+                    }
+                  >
+                    <Text style={{ color: GlobalStyles.appBlue }}>
+                      {newType === null ? "Click to create new type" : "Cancel"}
+                    </Text>
+                  </Pressable>
                 </View>
 
                 {backendErrors &&
@@ -419,6 +496,7 @@ export default function CourseInfoScreen({ navigation, route }) {
                 <CancelButton
                   onCancel={() => {
                     setShowCreateModal(false);
+                    setNewType(null);
                   }}
                 />
               </>
