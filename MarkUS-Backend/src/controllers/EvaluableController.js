@@ -52,12 +52,24 @@ const destroy = async (req, res) => {
     res.status(500).send(err)
   }
 }
+
+const createType = async (req, res) => {
+  try {
+    const newEvaluableType = await EvaluableType.build(req.body)
+    newEvaluableType.userId = req.user.id
+    await newEvaluableType.save()
+    res.json(newEvaluableType)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
   
 const EvaluableController = {
   indexTypes,
   create,
   update, 
-  destroy
+  destroy,
+  createType
 }
 export default EvaluableController
   

@@ -55,5 +55,11 @@ const update = [
   check('evaluableTypeId').custom(checkTypeExists),
   check('userId').not().exists(),
 ]
+
+const createType = [
+  check('name').exists().isString().isLength({ min: 1, max: 255 }).trim(),
+  check('userId').not().exists(),
+]
+
     
-export { create, update }
+export { create, update, createType }

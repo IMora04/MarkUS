@@ -12,6 +12,12 @@ const loadFileRoutes = function (app) {
     isLoggedIn,
     EvaluableController.indexTypes
   )
+  .post(
+    isLoggedIn,
+    EvaluableValidation.createType,
+    handleValidation,
+    EvaluableController.createType
+  )
 
   app.route('/evaluable')
   .post(
