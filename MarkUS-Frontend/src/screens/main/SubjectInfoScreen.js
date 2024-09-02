@@ -215,7 +215,6 @@ export default function CourseInfoScreen({ navigation, route }) {
     try {
       await EvaluableEndpoints.remove(id);
       setShowDeleteEvModal(false);
-      setEditingId(null);
       await fetchOneSubject(currentSubject.id);
       showMessage({
         message: "Evaluable succesfully removed",
@@ -310,7 +309,13 @@ export default function CourseInfoScreen({ navigation, route }) {
     </View>
   ) : (
     <View style={{ padding: 20, flex: 1 }}>
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{
+          flexDirection: "column",
+          justifyContent: "space-between",
+          flexGrow: 1,
+        }}
+      >
         <Text
           style={{
             textAlign: "center",
