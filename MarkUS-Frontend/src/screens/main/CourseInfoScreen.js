@@ -354,8 +354,8 @@ export default function CourseInfoScreen({ navigation, route }) {
                     </Text>
                     <Switch
                       trackColor={{
-                        false: GlobalStyles.brandSecondary,
-                        true: GlobalStyles.brandPrimary,
+                        false: null,
+                        true: GlobalStyles.appGreen,
                       }}
                       thumbColor={
                         values.isAnual ? GlobalStyles.brandSecondary : "#f4f3f4"
@@ -386,8 +386,8 @@ export default function CourseInfoScreen({ navigation, route }) {
                       <Text>1st Semester</Text>
                       <Switch
                         trackColor={{
-                          false: GlobalStyles.brandSecondary,
-                          true: GlobalStyles.brandPrimary,
+                          false: GlobalStyles.appOrangeTap,
+                          true: GlobalStyles.appOrangeTap,
                         }}
                         thumbColor={
                           values.secondSemester
