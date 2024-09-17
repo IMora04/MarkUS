@@ -5,7 +5,11 @@ const show = async (req, res) => {
     const course = await Course.findByPk(req.params.courseId, {
       include: {
         model: Subject,
-        as: 'subjects'
+        as: 'subjects',
+        include: {
+          model: Evaluable,
+          as: 'evaluables'
+        }
       }
     }
   )

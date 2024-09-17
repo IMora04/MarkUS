@@ -1,4 +1,4 @@
-import { Studies } from '../models/models.js'
+import { Evaluable, Studies } from '../models/models.js'
 import { Course } from '../models/models.js'
 import { Subject } from '../models/models.js'
 
@@ -18,7 +18,7 @@ const show = async (req, res) => {
       include: {
         model: Course,
         as: 'courses',
-        include: { model: Subject, as: 'subjects' }
+        include: { model: Subject, as: 'subjects', include: { model: Evaluable, as: 'evaluables' } }
       }
     }
   )
