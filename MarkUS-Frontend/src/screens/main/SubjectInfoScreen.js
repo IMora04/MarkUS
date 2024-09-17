@@ -328,6 +328,12 @@ export default function CourseInfoScreen({ navigation, route }) {
     }
   };
 
+  const computeSubjectAvg = (subject) => {
+    return subject.evaluables
+      .map((e) => (e.mark * e.weight) / 100)
+      .reduce((acc, cv) => acc + cv, 0);
+  };
+
   return loading ? (
     <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
       <ActivityIndicator />
@@ -359,6 +365,11 @@ export default function CourseInfoScreen({ navigation, route }) {
           ListEmptyComponent={renderEmptyList}
           ListFooterComponent={renderDoubleButtons}
         />
+
+        <Text style={{ fontSize: 20, marginTop: 20, alignSelf: "center" }}>
+          Total Avg: {computeSubjectAvg(currentSubject).toFixed(2)}
+        </Text>
+
         <DeleteButton
           name={"subject"}
           onDelete={() => setShowDeleteSubjectModal(true)}

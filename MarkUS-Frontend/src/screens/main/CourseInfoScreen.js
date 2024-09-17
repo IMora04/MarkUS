@@ -28,7 +28,7 @@ import DeleteButton from "../../components/buttons/DeleteButton";
 import { StudiesContext } from "../../context/StudiesContext";
 
 export default function CourseInfoScreen({ navigation, route }) {
-  const { currentCourse, setCurrentCourse, currentStudies } =
+  const { currentCourse, setCurrentCourse, currentStudies, courseTopSubjects } =
     useContext(StudiesContext);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [backendErrors, setBackendErrors] = useState();
@@ -44,18 +44,7 @@ export default function CourseInfoScreen({ navigation, route }) {
     credits: null,
   };
   const studiesName = currentStudies.name;
-  const topSubjects = currentCourse.subjects
-    ?.sort(function (a, b) {
-      return a.officialMark - b.officialMark;
-    })
-    .slice(-5)
-    .map((s) => {
-      return {
-        label: s.shortName,
-        value: s.officialMark || 0,
-        credits: s.credits,
-      };
-    });
+
   const coveredCredits = currentCourse.subjects
     ?.map((s) => s.credits)
     .reduce((accumulator, currentValue) => {
@@ -141,14 +130,19 @@ export default function CourseInfoScreen({ navigation, route }) {
       >
         <Text style={{ textAlign: "center", padding: 10 }}>
           {dimensions.window.width > 450 ? item.name : item.shortName}:{" "}
-          {item.officialMark
-            ? item.officialMark + " (official)"
-            : item.avgMark
-              ? item.avgMark
-              : "No mark yet"}
+          {computeAvgMark(item)}
         </Text>
       </Pressable>
     );
+  };
+
+  const computeAvgMark = (item) => {
+    return item.evaluables
+      .flatMap((e) => (e.mark * e.weight) / 100)
+      .reduce((acc, cv) => {
+        return acc + cv;
+      }, 0)
+      .toFixed(2);
   };
 
   const createSubject = async (values) => {
@@ -291,7 +285,7 @@ export default function CourseInfoScreen({ navigation, route }) {
 
           <TopSubjects
             width={dimensions.window.width}
-            topSubjects={topSubjects}
+            topSubjects={courseTopSubjects}
           />
         </View>
 

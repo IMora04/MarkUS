@@ -31,7 +31,8 @@ import CreateEditButton from "../../components/buttons/CreateEditButton";
 
 export default function StudiesInfoScreen({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext);
-  const { currentStudies, setCurrentStudies } = useContext(StudiesContext);
+  const { currentStudies, setCurrentStudies, studiesTopSubjects } =
+    useContext(StudiesContext);
   const [studiesNames, setStudiesNames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [backendErrors, setBackendErrors] = useState();
@@ -214,21 +215,6 @@ export default function StudiesInfoScreen({ navigation, route }) {
         0,
       ) / stats.takenSubjects?.reduce((acc, cv) => acc + cv.credits, 0) || 0
     ).toFixed(2),
-    topSubjects:
-      stats.subjects?.length !== 0
-        ? stats.subjects
-            ?.sort(function (a, b) {
-              return a.officialMark - b.officialMark;
-            })
-            .slice(-5)
-            .map((s) => {
-              return {
-                label: s.shortName,
-                value: s.officialMark || 0,
-                credits: s.credits,
-              };
-            })
-        : null,
   };
 
   const renderCourse = ({ item }) => {
@@ -349,7 +335,7 @@ export default function StudiesInfoScreen({ navigation, route }) {
               <View>
                 <TopSubjects
                   width={dimensions.window.width}
-                  topSubjects={stats.topSubjects}
+                  topSubjects={studiesTopSubjects}
                 />
               </View>
             </>
@@ -438,6 +424,7 @@ export default function StudiesInfoScreen({ navigation, route }) {
                   style={{ marginTop: 10 }}
                 />
               )}
+              <Text>{JSON.stringify(currentStudies, null, "\t")}</Text>
             </View>
           ) : (
             <></>
