@@ -6,6 +6,7 @@ const StudiesContextProvider = (props) => {
   const [currentStudies, setCurrentStudies] = useState({});
   const [currentCourse, setCurrentCourse] = useState({});
   const [currentSubject, setCurrentSubject] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const computeSubjectAvg = (subject) => {
     return subject.evaluables
@@ -45,6 +46,8 @@ const StudiesContextProvider = (props) => {
         setCurrentSubject,
         courseTopSubjects,
         studiesTopSubjects,
+        loading,
+        setLoading,
       }}
     >
       {props.children}

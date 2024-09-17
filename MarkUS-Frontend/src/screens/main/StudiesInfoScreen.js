@@ -10,7 +10,7 @@ import {
   Platform,
 } from "react-native";
 import { AuthorizationContext } from "../../context/AuthorizationContext";
-import { getAll, getDetail } from "../../api/StudiesEndpoints";
+import { getAll } from "../../api/StudiesEndpoints";
 import { create, update } from "../../api/CourseEndpoints";
 import { showMessage } from "react-native-flash-message";
 import * as GlobalStyles from "../../styles/GlobalStyles";
@@ -28,17 +28,19 @@ import CancelButton from "../../components/buttons/CancelButton";
 import { StudiesContext } from "../../context/StudiesContext";
 import EditClickable from "../../components/EditClickable";
 import CreateEditButton from "../../components/buttons/CreateEditButton";
+import Fetchers from "../../api/fetchers/Fetchers";
 
 export default function StudiesInfoScreen({ navigation, route }) {
   const { loggedInUser } = useContext(AuthorizationContext);
-  const { currentStudies, setCurrentStudies, studiesTopSubjects } =
+  const { currentStudies, studiesTopSubjects, loading, setLoading } =
     useContext(StudiesContext);
   const [studiesNames, setStudiesNames] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [backendErrors, setBackendErrors] = useState();
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(route.params.id);
   const [editingCourse, setEditingCourse] = useState(null);
+
+  const { fetchOneStudies } = Fetchers();
 
   const editing = editingCourse !== null;
 
@@ -128,22 +130,6 @@ export default function StudiesInfoScreen({ navigation, route }) {
       }, 200);
     }
   }, [showModal]);
-
-  async function fetchOneStudies(id) {
-    try {
-      setLoading(true);
-      const fetchedStudies = await getDetail(id);
-      setCurrentStudies(fetchedStudies);
-      setLoading(false);
-    } catch (error) {
-      showMessage({
-        message: `There was an error while retrieving studies. ${error} `,
-        type: "error",
-        style: GlobalStyles.flashStyle,
-        titleStyle: GlobalStyles.flashTextStyle,
-      });
-    }
-  }
 
   useEffect(() => {
     async function fetchStudies() {

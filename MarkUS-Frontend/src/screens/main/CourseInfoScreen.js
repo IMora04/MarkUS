@@ -12,7 +12,7 @@ import {
 import { FlatList } from "react-native-gesture-handler";
 import * as GlobalStyles from "../../styles/GlobalStyles";
 import { showMessage } from "react-native-flash-message";
-import { getDetail, remove } from "../../api/CourseEndpoints";
+import { remove } from "../../api/CourseEndpoints";
 import CreateStudiesModal from "../../components/modals/CreateModal";
 import { ErrorMessage, Formik } from "formik";
 import * as yup from "yup";
@@ -26,15 +26,22 @@ import DeleteModal from "../../components/modals/DeleteModal";
 import CancelButton from "../../components/buttons/CancelButton";
 import DeleteButton from "../../components/buttons/DeleteButton";
 import { StudiesContext } from "../../context/StudiesContext";
+import Fetchers from "../../api/fetchers/Fetchers";
 
 export default function CourseInfoScreen({ navigation, route }) {
-  const { currentCourse, setCurrentCourse, currentStudies, courseTopSubjects } =
-    useContext(StudiesContext);
+  const {
+    currentCourse,
+    setCurrentCourse,
+    currentStudies,
+    courseTopSubjects,
+    loading,
+    setLoading,
+  } = useContext(StudiesContext);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [backendErrors, setBackendErrors] = useState();
-  const [loading, setLoading] = useState(true);
   const { loggedInUser } = useContext(AuthorizationContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { fetchCourse } = Fetchers();
 
   const initialValues = {
     name: null,
@@ -89,21 +96,6 @@ export default function CourseInfoScreen({ navigation, route }) {
       navigation.navigate("My studies");
     }
   }, [loggedInUser]);
-
-  async function fetchCourse(id) {
-    try {
-      const fetchedCourse = await getDetail(id);
-      setCurrentCourse(fetchedCourse);
-      setLoading(false);
-    } catch (error) {
-      showMessage({
-        message: `There was an error while retrieving this course. ${error} `,
-        type: "error",
-        style: GlobalStyles.flashStyle,
-        titleStyle: GlobalStyles.flashTextStyle,
-      });
-    }
-  }
 
   useEffect(() => {
     setLoading(true);
