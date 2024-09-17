@@ -329,6 +329,9 @@ export default function CourseInfoScreen({ navigation, route }) {
   };
 
   const computeSubjectAvg = (subject) => {
+    if (!subject.evaluables) {
+      return 0;
+    }
     return subject.evaluables
       .map((e) => (e.mark * e.weight) / 100)
       .reduce((acc, cv) => acc + cv, 0);
