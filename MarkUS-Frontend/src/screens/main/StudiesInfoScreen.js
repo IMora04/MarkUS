@@ -424,7 +424,6 @@ export default function StudiesInfoScreen({ navigation, route }) {
                   style={{ marginTop: 10 }}
                 />
               )}
-              <Text>{JSON.stringify(currentStudies, null, "\t")}</Text>
             </View>
           ) : (
             <></>
